@@ -5,7 +5,15 @@ import os
 # Fix6: must be set before torch CUDA init
 os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 os.environ.setdefault("PYTORCH_ALLOC_CONF", "expandable_segments:True")
-import sys
+import sys, site
+for sp in reversed(site.getsitepackages()):
+    if sp in sys.path:
+        sys.path.remove(sp)
+    sys.path.insert(0, sp)
+sys.path = [p for p in sys.path if "pip_install_unsloth_flash_patch" not in p and "usr/lib/notebooks" not in p]
+if "PYTHONPATH" in os.environ:
+    os.environ["PYTHONPATH"] = ":".join([p for p in os.environ["PYTHONPATH"].split(":") if "pip_install_unsloth_flash_patch" not in p and "usr/lib" not in p])
+
 import time
 import json
 try:

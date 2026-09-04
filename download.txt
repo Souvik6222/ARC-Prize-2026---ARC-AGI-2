@@ -1,0 +1,385 @@
+12.3s 1 0.00s - Debugger warning: It seems that frozen modules are being used, which may
+12.3s 2 0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+12.3s 3 0.00s - to python to disable frozen modules.
+12.3s 4 0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+13.2s 5 0.00s - Debugger warning: It seems that frozen modules are being used, which may
+13.2s 6 0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+13.2s 7 0.00s - to python to disable frozen modules.
+13.2s 8 0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+13.7s 9 [ColabKernelApp] WARNING | Eventloop or matplotlib integration failed. Is matplotlib installed?
+14.0s 10 rerun=False budget=11.33h cutoff=Fri Sep  4 20:01:18 2026
+17.6s 11 Found existing installation: tensorflow 2.20.0
+21.3s 12 Uninstalling tensorflow-2.20.0:
+58.0s 13 Successfully uninstalled tensorflow-2.20.0
+58.8s 14 Found existing installation: torchao 0.14.1
+65.2s 15 Uninstalling torchao-0.14.1:
+66.2s 16 [31mERROR: Exception:
+66.2s 17 Traceback (most recent call last):
+66.2s 18 File "/usr/lib/python3.12/shutil.py", line 847, in move
+66.2s 19 os.rename(src, real_dst)
+66.2s 20 OSError: [Errno 18] Invalid cross-device link: '/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/torchao-0.14.1.dist-info/' -> '/tmp/pip-uninstall-qybv6doa'
+66.2s 21 
+66.2s 22 During handling of the above exception, another exception occurred:
+66.2s 23 
+66.2s 24 Traceback (most recent call last):
+66.2s 25 File "/usr/local/lib/python3.12/dist-packages/pip/_internal/cli/base_command.py", line 179, in exc_logging_wrapper
+66.2s 26 status = run_func(*args)
+66.2s 27 ^^^^^^^^^^^^^^^
+66.2s 28 File "/usr/local/lib/python3.12/dist-packages/pip/_internal/commands/uninstall.py", line 106, in run
+66.2s 29 uninstall_pathset = req.uninstall(
+66.2s 30 ^^^^^^^^^^^^^^
+66.2s 31 File "/usr/local/lib/python3.12/dist-packages/pip/_internal/req/req_install.py", line 722, in uninstall
+66.2s 32 uninstalled_pathset.remove(auto_confirm, verbose)
+66.2s 33 File "/usr/local/lib/python3.12/dist-packages/pip/_internal/req/req_uninstall.py", line 370, in remove
+66.2s 34 moved.stash(path)
+66.2s 35 File "/usr/local/lib/python3.12/dist-packages/pip/_internal/req/req_uninstall.py", line 261, in stash
+66.2s 36 renames(path, new_path)
+66.2s 37 File "/usr/local/lib/python3.12/dist-packages/pip/_internal/utils/misc.py", line 356, in renames
+66.2s 38 shutil.move(old, new)
+66.2s 39 File "/usr/lib/python3.12/shutil.py", line 865, in move
+66.2s 40 rmtree(src)
+66.2s 41 File "/usr/lib/python3.12/shutil.py", line 759, in rmtree
+66.2s 42 _rmtree_safe_fd(stack, onexc)
+66.2s 43 File "/usr/lib/python3.12/shutil.py", line 703, in _rmtree_safe_fd
+66.2s 44 onexc(func, path, err)
+66.2s 45 File "/usr/lib/python3.12/shutil.py", line 700, in _rmtree_safe_fd
+66.2s 46 onexc(os.unlink, fullname, err)
+66.2s 47 File "/usr/lib/python3.12/shutil.py", line 698, in _rmtree_safe_fd
+66.2s 48 os.unlink(entry.name, dir_fd=topfd)
+66.2s 49 OSError: [Errno 30] Read-only file system: '/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/torchao-0.14.1.dist-info/'[0m[31m
+75.0s 50 [0m3.12.13 torch 2.10.0+cu128 gpus 4 ['NVIDIA L4', 'NVIDIA L4', 'NVIDIA L4', 'NVIDIA L4']
+75.0s 51 models: ['/kaggle/input/models/sorokin/qwen3_4b_grids15_sft139'] []
+75.0s 52 utility scripts: ['/kaggle/usr/lib', '/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch']
+75.0s 53 Writing arc_invariants.py
+75.0s 54 Writing arc_symbolic.py
+75.0s 55 Writing arc_loader.py
+75.1s 56 Writing arc_decoder.py
+75.1s 57 Writing arc_solver.py
+75.1s 58 Writing starter.py
+78.0s 59 Traceback (most recent call last):
+78.0s 60 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/_core/__init__.py", line 23, in <module>
+78.0s 61 from . import multiarray
+78.0s 62 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/_core/multiarray.py", line 10, in <module>
+78.0s 63 from . import overrides
+78.0s 64 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/_core/overrides.py", line 7, in <module>
+78.0s 65 from numpy._core._multiarray_umath import (
+78.0s 66 ModuleNotFoundError: No module named 'numpy._core._multiarray_umath'
+78.0s 67 
+78.0s 68 During handling of the above exception, another exception occurred:
+78.0s 69 
+78.0s 70 Traceback (most recent call last):
+78.0s 71 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/__init__.py", line 114, in <module>
+78.0s 72 from numpy.__config__ import show_config
+78.0s 73 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/__config__.py", line 4, in <module>
+78.0s 74 from numpy._core._multiarray_umath import (
+78.0s 75 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/_core/__init__.py", line 49, in <module>
+78.0s 76 raise ImportError(msg)
+78.0s 77 ImportError:
+78.0s 78 
+78.0s 79 IMPORTANT: PLEASE READ THIS FOR ADVICE ON HOW TO SOLVE THIS ISSUE!
+78.0s 80 
+78.0s 81 Importing the numpy C-extensions failed. This error can happen for
+78.0s 82 many reasons, often due to issues with your setup or how NumPy was
+78.0s 83 installed.
+78.0s 84 
+78.0s 85 We have compiled some common reasons and troubleshooting tips at:
+78.0s 86 
+78.0s 87 https://numpy.org/devdocs/user/troubleshooting-importerror.html
+78.0s 88 
+78.0s 89 Please note and check the following:
+78.0s 90 
+78.0s 91 * The Python version is: Python3.12 from "/usr/bin/python3"
+78.0s 92 * The NumPy version is: "2.2.6"
+78.0s 93 
+78.0s 94 and make sure that they are the versions you expect.
+78.0s 95 Please carefully study the documentation linked above for further help.
+78.0s 96 
+78.0s 97 Original error was: No module named 'numpy._core._multiarray_umath'
+78.0s 98 
+78.0s 99 
+78.0s 100 The above exception was the direct cause of the following exception:
+78.0s 101 
+78.0s 102 Traceback (most recent call last):
+78.0s 103 File "/kaggle/working/starter.py", line 22, in <module>
+78.0s 104 import numpy as np
+78.0s 105 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/__init__.py", line 119, in <module>
+78.0s 106 raise ImportError(msg) from e
+78.0s 107 ImportError: Error importing numpy: you should not try to import numpy from
+78.0s 108 its source directory; please exit the numpy source tree, and relaunch
+78.0s 109 your python interpreter from there.
+78.2s 110 phase-1 rc=1 took 0.1 min; remaining 678.9 min
+78.2s 111 Traceback (most recent call last):
+78.2s 112 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/_core/__init__.py", line 23, in <module>
+78.2s 113 from . import multiarray
+78.2s 114 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/_core/multiarray.py", line 10, in <module>
+78.2s 115 from . import overrides
+78.2s 116 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/_core/overrides.py", line 7, in <module>
+78.2s 117 from numpy._core._multiarray_umath import (
+78.2s 118 ModuleNotFoundError: No module named 'numpy._core._multiarray_umath'
+78.2s 119 
+78.2s 120 During handling of the above exception, another exception occurred:
+78.2s 121 
+78.2s 122 Traceback (most recent call last):
+78.2s 123 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/__init__.py", line 114, in <module>
+78.2s 124 from numpy.__config__ import show_config
+78.2s 125 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/__config__.py", line 4, in <module>
+78.2s 126 from numpy._core._multiarray_umath import (
+78.2s 127 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/_core/__init__.py", line 49, in <module>
+78.2s 128 raise ImportError(msg)
+78.2s 129 ImportError:
+78.2s 130 
+78.2s 131 IMPORTANT: PLEASE READ THIS FOR ADVICE ON HOW TO SOLVE THIS ISSUE!
+78.2s 132 
+78.2s 133 Importing the numpy C-extensions failed. This error can happen for
+78.2s 134 many reasons, often due to issues with your setup or how NumPy was
+78.2s 135 installed.
+78.2s 136 
+78.2s 137 We have compiled some common reasons and troubleshooting tips at:
+78.2s 138 
+78.2s 139 https://numpy.org/devdocs/user/troubleshooting-importerror.html
+78.2s 140 
+78.2s 141 Please note and check the following:
+78.2s 142 
+78.2s 143 * The Python version is: Python3.12 from "/usr/bin/python3"
+78.2s 144 * The NumPy version is: "2.2.6"
+78.2s 145 
+78.2s 146 and make sure that they are the versions you expect.
+78.2s 147 Please carefully study the documentation linked above for further help.
+78.2s 148 
+78.2s 149 Original error was: No module named 'numpy._core._multiarray_umath'
+78.2s 150 
+78.2s 151 
+78.2s 152 The above exception was the direct cause of the following exception:
+78.2s 153 
+78.2s 154 Traceback (most recent call last):
+78.2s 155 File "/kaggle/working/starter.py", line 22, in <module>
+78.2s 156 import numpy as np
+78.2s 157 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/__init__.py", line 119, in <module>
+78.2s 158 raise ImportError(msg) from e
+78.2s 159 ImportError: Error importing numpy: you should not try to import numpy from
+78.2s 160 its source directory; please exit the numpy source tree, and relaunch
+78.2s 161 your python interpreter from there.
+78.2s 162 
+78.2s 163 Traceback (most recent call last):
+78.2s 164 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/_core/__init__.py", line 23, in <module>
+78.2s 165 from . import multiarray
+78.2s 166 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/_core/multiarray.py", line 10, in <module>
+78.2s 167 from . import overrides
+78.2s 168 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/_core/overrides.py", line 7, in <module>
+78.2s 169 from numpy._core._multiarray_umath import (
+78.2s 170 ModuleNotFoundError: No module named 'numpy._core._multiarray_umath'
+78.2s 171 
+78.2s 172 During handling of the above exception, another exception occurred:
+78.2s 173 
+78.2s 174 Traceback (most recent call last):
+78.2s 175 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/__init__.py", line 114, in <module>
+78.2s 176 from numpy.__config__ import show_config
+78.2s 177 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/__config__.py", line 4, in <module>
+78.2s 178 from numpy._core._multiarray_umath import (
+78.2s 179 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/_core/__init__.py", line 49, in <module>
+78.2s 180 raise ImportError(msg)
+78.2s 181 ImportError:
+78.2s 182 
+78.2s 183 IMPORTANT: PLEASE READ THIS FOR ADVICE ON HOW TO SOLVE THIS ISSUE!
+78.2s 184 
+78.2s 185 Importing the numpy C-extensions failed. This error can happen for
+78.2s 186 many reasons, often due to issues with your setup or how NumPy was
+78.2s 187 installed.
+78.2s 188 
+78.2s 189 We have compiled some common reasons and troubleshooting tips at:
+78.2s 190 
+78.2s 191 https://numpy.org/devdocs/user/troubleshooting-importerror.html
+78.2s 192 
+78.2s 193 Please note and check the following:
+78.2s 194 
+78.2s 195 * The Python version is: Python3.12 from "/usr/bin/python3"
+78.2s 196 * The NumPy version is: "2.2.6"
+78.2s 197 
+78.2s 198 and make sure that they are the versions you expect.
+78.2s 199 Please carefully study the documentation linked above for further help.
+78.2s 200 
+78.2s 201 Original error was: No module named 'numpy._core._multiarray_umath'
+78.2s 202 
+78.2s 203 
+78.2s 204 The above exception was the direct cause of the following exception:
+78.2s 205 
+78.2s 206 Traceback (most recent call last):
+78.2s 207 File "/kaggle/working/starter.py", line 22, in <module>
+78.2s 208 import numpy as np
+78.2s 209 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/__init__.py", line 119, in <module>
+78.2s 210 raise ImportError(msg) from e
+78.2s 211 ImportError: Error importing numpy: you should not try to import numpy from
+78.2s 212 its source directory; please exit the numpy source tree, and relaunch
+78.2s 213 your python interpreter from there.
+78.4s 214 *** Loaded 0 shards / 0 samples from /kaggle/inference_outputs (skipped 0)
+78.4s 215 *** Loaded 0 shards / 0 samples from /kaggle/working/symbolic_outputs (skipped 0)
+78.4s 216 [phase-2] unprocessed=240 starved_tasks=0 remaining=678.9 min
+78.5s 217 Traceback (most recent call last):
+78.5s 218 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/_core/__init__.py", line 23, in <module>
+78.5s 219 from . import multiarray
+78.5s 220 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/_core/multiarray.py", line 10, in <module>
+78.5s 221 from . import overrides
+78.5s 222 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/_core/overrides.py", line 7, in <module>
+78.5s 223 from numpy._core._multiarray_umath import (
+78.5s 224 ModuleNotFoundError: No module named 'numpy._core._multiarray_umath'
+78.5s 225 
+78.5s 226 During handling of the above exception, another exception occurred:
+78.5s 227 
+78.5s 228 Traceback (most recent call last):
+78.5s 229 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/__init__.py", line 114, in <module>
+78.5s 230 from numpy.__config__ import show_config
+78.5s 231 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/__config__.py", line 4, in <module>
+78.5s 232 from numpy._core._multiarray_umath import (
+78.5s 233 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/_core/__init__.py", line 49, in <module>
+78.5s 234 raise ImportError(msg)
+78.5s 235 ImportError:
+78.5s 236 
+78.5s 237 IMPORTANT: PLEASE READ THIS FOR ADVICE ON HOW TO SOLVE THIS ISSUE!
+78.5s 238 
+78.5s 239 Importing the numpy C-extensions failed. This error can happen for
+78.5s 240 many reasons, often due to issues with your setup or how NumPy was
+78.5s 241 installed.
+78.5s 242 
+78.5s 243 We have compiled some common reasons and troubleshooting tips at:
+78.5s 244 
+78.5s 245 https://numpy.org/devdocs/user/troubleshooting-importerror.html
+78.5s 246 
+78.5s 247 Please note and check the following:
+78.5s 248 
+78.5s 249 * The Python version is: Python3.12 from "/usr/bin/python3"
+78.5s 250 * The NumPy version is: "2.2.6"
+78.5s 251 
+78.5s 252 and make sure that they are the versions you expect.
+78.5s 253 Please carefully study the documentation linked above for further help.
+78.5s 254 
+78.5s 255 Original error was: No module named 'numpy._core._multiarray_umath'
+78.5s 256 
+78.5s 257 
+78.5s 258 The above exception was the direct cause of the following exception:
+78.5s 259 
+78.5s 260 Traceback (most recent call last):
+78.5s 261 File "/kaggle/working/starter.py", line 22, in <module>
+78.5s 262 import numpy as np
+78.5s 263 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/__init__.py", line 119, in <module>
+78.5s 264 raise ImportError(msg) from e
+78.5s 265 ImportError: Error importing numpy: you should not try to import numpy from
+78.5s 266 its source directory; please exit the numpy source tree, and relaunch
+78.5s 267 your python interpreter from there.
+78.6s 268 [phase-2:catchup] rc=1 keys=240 took 0.0 min; remaining 678.9 min
+78.6s 269 Traceback (most recent call last):
+78.6s 270 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/_core/__init__.py", line 23, in <module>
+78.6s 271 from . import multiarray
+78.6s 272 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/_core/multiarray.py", line 10, in <module>
+78.6s 273 from . import overrides
+78.6s 274 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/_core/overrides.py", line 7, in <module>
+78.6s 275 from numpy._core._multiarray_umath import (
+78.6s 276 ModuleNotFoundError: No module named 'numpy._core._multiarray_umath'
+78.6s 277 
+78.6s 278 During handling of the above exception, another exception occurred:
+78.6s 279 
+78.6s 280 Traceback (most recent call last):
+78.6s 281 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/__init__.py", line 114, in <module>
+78.6s 282 from numpy.__config__ import show_config
+78.6s 283 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/__config__.py", line 4, in <module>
+78.6s 284 from numpy._core._multiarray_umath import (
+78.6s 285 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/_core/__init__.py", line 49, in <module>
+78.6s 286 raise ImportError(msg)
+78.6s 287 ImportError:
+78.6s 288 
+78.6s 289 IMPORTANT: PLEASE READ THIS FOR ADVICE ON HOW TO SOLVE THIS ISSUE!
+78.6s 290 
+78.6s 291 Importing the numpy C-extensions failed. This error can happen for
+78.6s 292 many reasons, often due to issues with your setup or how NumPy was
+78.6s 293 installed.
+78.6s 294 
+78.6s 295 We have compiled some common reasons and troubleshooting tips at:
+78.6s 296 
+78.6s 297 https://numpy.org/devdocs/user/troubleshooting-importerror.html
+78.6s 298 
+78.6s 299 Please note and check the following:
+78.6s 300 
+78.6s 301 * The Python version is: Python3.12 from "/usr/bin/python3"
+78.6s 302 * The NumPy version is: "2.2.6"
+78.6s 303 
+78.6s 304 and make sure that they are the versions you expect.
+78.6s 305 Please carefully study the documentation linked above for further help.
+78.6s 306 
+78.6s 307 Original error was: No module named 'numpy._core._multiarray_umath'
+78.6s 308 
+78.6s 309 
+78.6s 310 The above exception was the direct cause of the following exception:
+78.6s 311 
+78.6s 312 Traceback (most recent call last):
+78.6s 313 File "/kaggle/working/starter.py", line 22, in <module>
+78.6s 314 import numpy as np
+78.6s 315 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/__init__.py", line 119, in <module>
+78.6s 316 raise ImportError(msg) from e
+78.6s 317 ImportError: Error importing numpy: you should not try to import numpy from
+78.6s 318 its source directory; please exit the numpy source tree, and relaunch
+78.6s 319 your python interpreter from there.
+78.6s 320 
+78.6s 321 Traceback (most recent call last):
+78.6s 322 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/_core/__init__.py", line 23, in <module>
+78.6s 323 from . import multiarray
+78.6s 324 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/_core/multiarray.py", line 10, in <module>
+78.6s 325 from . import overrides
+78.6s 326 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/_core/overrides.py", line 7, in <module>
+78.6s 327 from numpy._core._multiarray_umath import (
+78.6s 328 ModuleNotFoundError: No module named 'numpy._core._multiarray_umath'
+78.6s 329 
+78.6s 330 During handling of the above exception, another exception occurred:
+78.6s 331 
+78.6s 332 Traceback (most recent call last):
+78.6s 333 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/__init__.py", line 114, in <module>
+78.6s 334 from numpy.__config__ import show_config
+78.6s 335 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/__config__.py", line 4, in <module>
+78.6s 336 from numpy._core._multiarray_umath import (
+78.6s 337 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/_core/__init__.py", line 49, in <module>
+78.6s 338 raise ImportError(msg)
+78.6s 339 ImportError:
+78.6s 340 
+78.6s 341 IMPORTANT: PLEASE READ THIS FOR ADVICE ON HOW TO SOLVE THIS ISSUE!
+78.6s 342 
+78.6s 343 Importing the numpy C-extensions failed. This error can happen for
+78.6s 344 many reasons, often due to issues with your setup or how NumPy was
+78.6s 345 installed.
+78.6s 346 
+78.6s 347 We have compiled some common reasons and troubleshooting tips at:
+78.6s 348 
+78.6s 349 https://numpy.org/devdocs/user/troubleshooting-importerror.html
+78.6s 350 
+78.6s 351 Please note and check the following:
+78.6s 352 
+78.6s 353 * The Python version is: Python3.12 from "/usr/bin/python3"
+78.6s 354 * The NumPy version is: "2.2.6"
+78.6s 355 
+78.6s 356 and make sure that they are the versions you expect.
+78.6s 357 Please carefully study the documentation linked above for further help.
+78.6s 358 
+78.6s 359 Original error was: No module named 'numpy._core._multiarray_umath'
+78.6s 360 
+78.6s 361 
+78.6s 362 The above exception was the direct cause of the following exception:
+78.6s 363 
+78.6s 364 Traceback (most recent call last):
+78.6s 365 File "/kaggle/working/starter.py", line 22, in <module>
+78.6s 366 import numpy as np
+78.6s 367 File "/kaggle/usr/lib/notebooks/sorokin/pip_install_unsloth_flash_patch/numpy/__init__.py", line 119, in <module>
+78.6s 368 raise ImportError(msg) from e
+78.6s 369 ImportError: Error importing numpy: you should not try to import numpy from
+78.6s 370 its source directory; please exit the numpy source tree, and relaunch
+78.6s 371 your python interpreter from there.
+78.7s 372 *** Load solutions from '/kaggle/input/competitions/arc-prize-2026-arc-agi-2/arc-agi_evaluation_solutions.json'...
+78.7s 373 *** Loaded 0 shards / 0 samples from /kaggle/working/symbolic_outputs (skipped 0)
+78.7s 374 *** Loaded 0 shards / 0 samples from /kaggle/inference_outputs (skipped 0)
+78.7s 375 *** Loaded 0 shards / 0 samples from /kaggle/inference_outputs_deep (skipped 0)
+78.7s 376 *** wrote submission.json: 240 tasks, 259 outputs, 259 fallbacks, sha256=3739be35dbba
+78.7s 377 *** submission schema verified OK!
+84.4s 378 /usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\|'
+84.4s 379 cells[i][c] = re.sub('\\\\\|', '|', cell)
+84.8s 380 /usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\_'
+84.8s 381 text = re.sub(r'_', '\_', text) # Escape underscores in display text
+87.0s 382 [NbConvertApp] Converting notebook __notebook__.ipynb to notebook
+87.3s 383 [NbConvertApp] Writing 143281 bytes to __notebook__.ipynb
+91.6s 384 [NbConvertApp] Converting notebook __notebook__.ipynb to html
+93.1s 385 [NbConvertApp] Writing 806039 bytes to __results__.html

@@ -11,7 +11,7 @@ os.environ.setdefault("PYTORCH_ALLOC_CONF", "expandable_segments:True")
 sys.setrecursionlimit(5000)
 
 import site
-# Prioritize real system site-packages so real PyTorch is loaded
+# Prioritize real system site-packages so real PyTorch and NumPy are loaded
 for sp in reversed(site.getsitepackages()):
     if sp in sys.path:
         sys.path.remove(sp)
@@ -21,23 +21,10 @@ for sp in reversed(site.getsitepackages()):
 if "torchao" in sys.modules:
     del sys.modules["torchao"]
 
-# Patch peft to safely treat torchao as unavailable
-try:
-    import peft.import_utils
-    peft.import_utils.is_torchao_available = lambda: False
-except Exception:
-    pass
-try:
-    import peft.tuners.lora.torchao
-    peft.tuners.lora.torchao.is_torchao_available = lambda: False
-except Exception:
-    pass
-
-# Move any utility script shadow folders to the end of sys.path
-for p in list(sys.path):
-    if "pip_install_unsloth_flash_patch" in p or "usr/lib/notebooks" in p:
-        sys.path.remove(p)
-        sys.path.append(p)
+# Purge legacy utility script shadow folders that contain incompatible Python 3.11 numpy binaries
+sys.path = [p for p in sys.path if "pip_install_unsloth_flash_patch" not in p and "usr/lib/notebooks" not in p]
+if "PYTHONPATH" in os.environ:
+    os.environ["PYTHONPATH"] = ":".join([p for p in os.environ["PYTHONPATH"].split(":") if "pip_install_unsloth_flash_patch" not in p and "usr/lib" not in p])
 
 # Discover unsloth from Kaggle utility scripts or input datasets and append to sys.path
 _unsloth_search_paths = (
