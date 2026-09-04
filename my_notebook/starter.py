@@ -84,13 +84,26 @@ def estimated_work(task):
     return train_tokens * 16 + test_tokens * 8 * len(task["test"])
 
 
-def run_symbolic_prepass(data, keys, symbolic_out_dir="/kaggle/working/symbolic_outputs"):
+def run_symbolic_prepass(data, keys, symbolic_out_dir=None):
     """
     Executes fast symbolic pre-pass on CPU.
     Returns:
       solved_tasks: list of task keys solved with 100% exact demonstration verification.
     """
-    os.makedirs(symbolic_out_dir, exist_ok=True)
+    if symbolic_out_dir is None:
+        symbolic_out_dir = os.getenv("ARC_SYMBOLIC_DIR", "/kaggle/working/symbolic_outputs")
+        # fallback to local if /kaggle not writable
+        try:
+            os.makedirs(symbolic_out_dir, exist_ok=True)
+        except PermissionError:
+            symbolic_out_dir = "./symbolic_outputs"
+            os.makedirs(symbolic_out_dir, exist_ok=True)
+    else:
+        try:
+            os.makedirs(symbolic_out_dir, exist_ok=True)
+        except PermissionError:
+            symbolic_out_dir = "./symbolic_outputs"
+            os.makedirs(symbolic_out_dir, exist_ok=True)
     solved_tasks = []
     symbolic_summary = {}
 
@@ -197,8 +210,42 @@ if __name__ == "__main__":
     elif args.order == "sorted":
         keys = sorted(keys)
 
+    # 2b. Resume: skip tasks already having all shards in out_dir/symbolic (power outage safe)
+    try:
+        out_dir_resume = os.getenv("ARC_OUT_DIR", "/kaggle/inference_outputs")
+        sym_dir_resume = "/kaggle/working/symbolic_outputs"
+        if not os.path.isdir(out_dir_resume) and os.path.isdir("./inference_outputs"):
+            out_dir_resume = "./inference_outputs"
+        have_files = set()
+        if os.path.isdir(out_dir_resume):
+            have_files.update(os.listdir(out_dir_resume))
+        if os.path.isdir(sym_dir_resume):
+            have_files.update(os.listdir(sym_dir_resume))
+        if os.path.isdir("./symbolic_outputs"):
+            have_files.update(os.listdir("./symbolic_outputs"))
+        if have_files:
+            done = []
+            remaining_keys = []
+            for k in keys:
+                n_out = len(data[k]["test"])
+                is_done = all(any(f.startswith(f"{k}_{i}") for f in have_files) for i in range(n_out))
+                if is_done:
+                    done.append(k)
+                else:
+                    remaining_keys.append(k)
+            if done:
+                print(f"[resume] skip {len(done)} already done ({len(done)}/{len(done)+len(remaining_keys)}), {len(remaining_keys)} remaining")
+                keys = remaining_keys
+    except Exception as e:
+        print(f"[resume] check failed: {e}")
+
     nprocs = args.nprocs or min(4, max(1, torch.cuda.device_count()))
-    os.makedirs(args.marker_dir, exist_ok=True)
+    # marker_dir fallback to local if /kaggle not writable
+    try:
+        os.makedirs(args.marker_dir, exist_ok=True)
+    except PermissionError:
+        args.marker_dir = "./markers"
+        os.makedirs(args.marker_dir, exist_ok=True)
     for f_ in os.listdir(args.marker_dir):
         try:
             os.remove(os.path.join(args.marker_dir, f_))

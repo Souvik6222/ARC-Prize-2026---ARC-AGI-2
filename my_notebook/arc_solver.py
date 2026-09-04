@@ -46,12 +46,35 @@ for p in _unsloth_search_paths:
 try:
     from unsloth import FastLanguageModel, UnslothTrainingArguments, UnslothTrainer
     HAS_UNSLOTH = True
-except ImportError:
+    _unsloth_import_error = ""
+except ImportError as _e:
     HAS_UNSLOTH = False
-    from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments, Trainer
-    from peft import LoraConfig, get_peft_model
+    _unsloth_import_error = f"{type(_e).__name__}: {_e}"
+    try:
+        from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments, Trainer
+        from peft import LoraConfig, get_peft_model
+    except ImportError as _e2:
+        # e.g. transformers' Trainer pull-ins (torchao quantizer) can explode when versions
+        # mismatch — surface the actionable message instead of a cryptic traceback.
+        raise RuntimeError(
+            "[arc_solver] Unsloth import failed AND fallback imports failed "
+            f"(unsloth error: {_unsloth_import_error}; fallback error: {type(_e2).__name__}: {_e2}). "
+            "Attach the pip-install-unsloth-flash-patch utility script to this notebook."
+        ) from _e2
     UnslothTrainingArguments = TrainingArguments
     UnslothTrainer = Trainer
+
+print(f"[arc_solver] HAS_UNSLOTH={HAS_UNSLOTH} {_unsloth_import_error}".rstrip(), flush=True)
+# Guard1: never silently run the non-Unsloth fallback on Kaggle — it trains with
+# training_loss=0.0 on every task and emits zero neural shards (sub2 0% incident).
+# Abort loudly at startup instead of burning a 12h budget. Override with ARC_REQUIRE_UNSLOTH=0.
+_require_unsloth = os.getenv("ARC_REQUIRE_UNSLOTH", "1" if os.path.isdir("/kaggle") else "0")
+if not HAS_UNSLOTH and _require_unsloth == "1":
+    raise RuntimeError(
+        "[arc_solver] Unsloth import failed — aborting instead of running the fallback path "
+        f"(import error: {_unsloth_import_error}). Attach the pip-install-unsloth-flash-patch "
+        "utility script to this notebook so /kaggle/usr/lib provides unsloth."
+    )
 
 from arc_loader import ArcDataset, QwenFormatter, is_valid_solution
 from arc_decoder import hashable
@@ -95,7 +118,7 @@ CFG = dict(
     dfs_window      = _env("ARC_DFS_WINDOW", 540.0, float), # seconds per DFS call
     task_cap        = _env("ARC_TASK_CAP", 1200.0, float),  # seconds per task (decode phase)
     score_seed_off  = _env("ARC_SCORE_SEED_OFFSET", 0, int),
-    decode_batch    = _env("ARC_DECODE_BATCH", 4, int),
+    decode_batch    = _env("ARC_DECODE_BATCH", 2, int),
     early_stop_loss = _env("ARC_EARLY_STOP_LOSS", 5e-4, float), # TTT loss threshold for early stop
 )
 
@@ -485,20 +508,28 @@ def worker(rank, queue, end_time, test_path=None):
     print(f"[Rank {rank}] config: {CFG}")
 
     if HAS_UNSLOTH:
+        # Precision policy: 4-bit locally (8GB VRAM), bf16 on Kaggle (22GB L4) where the
+        # public 33.89 baseline runs full precision. Override with ARC_LOAD_4BIT=0/1.
+        _load_4bit = _env("ARC_LOAD_4BIT", 0 if os.path.isdir("/kaggle") else 1, int) == 1
+        print(f"[Rank {rank}] load_in_4bit={_load_4bit}", flush=True)
         model, tokenizer = FastLanguageModel.from_pretrained(
             model_name=model_dir,
             full_finetuning=False,
-            load_in_4bit=False,
+            load_in_4bit=_load_4bit,
             local_files_only=True,
             use_gradient_checkpointing=_env("ARC_GRAD_CKPT", 1, int) == 1,
             max_seq_length=max_seq_length,
         )
         model = FastLanguageModel.get_peft_model(model, **peft_params)
     else:
-        from transformers import AutoTokenizer, AutoModelForCausalLM
+        from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
         from peft import LoraConfig, get_peft_model
         tokenizer = AutoTokenizer.from_pretrained(model_dir, local_files_only=True)
-        model = AutoModelForCausalLM.from_pretrained(model_dir, torch_dtype=torch.bfloat16, local_files_only=True)
+        try:
+            bnb_cfg = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=torch.bfloat16)
+            model = AutoModelForCausalLM.from_pretrained(model_dir, quantization_config=bnb_cfg, local_files_only=True, device_map="cuda")
+        except Exception:
+            model = AutoModelForCausalLM.from_pretrained(model_dir, torch_dtype=torch.bfloat16, local_files_only=True)
         peft_config = LoraConfig(
             r=peft_params.get("r", 64),
             lora_alpha=peft_params.get("lora_alpha", 32),
@@ -574,6 +605,8 @@ def worker(rank, queue, end_time, test_path=None):
 
     early_stop_cb = EarlyStoppingOnLossCallback(threshold=CFG["early_stop_loss"])
 
+    _zero_loss_streak = 0  # Guard2: consecutive tasks with training_loss<=0 (systematic failure -> park worker)
+
     while True:
         if time.time() > end_time:
             print(f"[Rank {rank}] stop!")
@@ -621,6 +654,22 @@ def worker(rank, queue, end_time, test_path=None):
                     args=make_training_args(**train_args),
                 )
 
+            # Guard3: verify the collator leaves real (non -100) labels before spending GPU on TTT.
+            # Replicates QwenDataCollatorForCompletionOnlyLM masking on the first sequence.
+            try:
+                _probe_ids = tokenizer.encode(train_ds.as_list(formatter)[0]["text"])
+                _lp = np.array(_probe_ids)
+                _starts = sorted(np.where(_lp == USER_TOKEN_ID)[0].tolist() + np.where(_lp == ASSISTANT_TOKEN_ID)[0].tolist())
+                _ends = np.where(_lp == EOS_ID)[0]
+                _n_unmasked = 0
+                for _j, (_s, _e) in enumerate(zip(_starts, _ends)):
+                    if _s < _e and _j % 2 == 1:
+                        _n_unmasked += max(0, _e - (_s + 2))
+                print(f"[Rank {rank}] puzzle {key}: first-seq unmasked labels={_n_unmasked} (len={len(_probe_ids)})", flush=True)
+            except Exception as _e:
+                _n_unmasked = -1
+                print(f"[Rank {rank}] label probe failed for puzzle {key}: {type(_e).__name__}: {_e}", flush=True)
+
             with io.StringIO() as buf, redirect_stdout(buf), redirect_stderr(buf):
                 trainer = UnslothFixedTrainer(
                     model=model,
@@ -656,6 +705,26 @@ def worker(rank, queue, end_time, test_path=None):
             print(f"[Rank {rank}] allocated {memory_allocated}MB for training")
             torch.cuda.reset_peak_memory_stats()
             print(f"[Rank {rank}] training stats for puzzle {key}: {stats}")
+            # Guard2: zero/invalid loss means the adapter learned nothing — decoding would only
+            # waste task_cap and emit empty shards. Skip the task; park this worker after 3 in a row.
+            try:
+                _train_loss = float(getattr(stats, "training_loss", float("nan")))
+            except Exception:
+                _train_loss = float("nan")
+            if not (_train_loss > 0):
+                _zero_loss_streak += 1
+                print(f"[Rank {rank}] FATAL: training_loss={_train_loss} for puzzle {key} "
+                      f"(HAS_UNSLOTH={HAS_UNSLOTH}, streak={_zero_loss_streak}) — skipping decode, no shards written.", flush=True)
+                gc.collect()
+                try:
+                    torch.cuda.empty_cache()
+                except Exception:
+                    pass
+                if _zero_loss_streak >= 3:
+                    print(f"[Rank {rank}] FATAL: {_zero_loss_streak} consecutive zero-loss tasks — parking worker.", flush=True)
+                    break
+                continue
+            _zero_loss_streak = 0
             try:
                 del train_ds
             except Exception:
