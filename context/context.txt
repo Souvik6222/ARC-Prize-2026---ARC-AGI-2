@@ -1,0 +1,133 @@
+# ARC Prize 2026 – ARC-AGI-2 Competition Context
+
+I am participating in the **ARC Prize 2026 – ARC-AGI-2 competition on Kaggle**.
+
+**Competition Link:**
+https://www.kaggle.com/competitions/arc-prize-2026
+
+This project is focused on the **ARC-AGI-2 benchmark**, which evaluates an AI system's ability to solve novel abstract reasoning tasks and generalize from a small number of examples.
+
+## Competition Information
+
+* **Competition:** ARC Prize 2026 – ARC-AGI-2
+* **Platform:** Kaggle
+* **Benchmark:** ARC-AGI-2
+* **Task Type:** Abstract reasoning and generalization
+* **Input:** Colored 2D grids
+* **Output:** Colored 2D grids
+* **Evaluation:** Exact matching of predicted output grids
+* **Submission:** Kaggle submission file
+* **Competition End Date:** November 2, 2026
+
+## Dataset Structure
+
+The ARC-AGI-2 data is organized around individual **tasks**.
+
+Each task contains:
+
+* One or more **training examples**
+* One or more **test examples**
+
+Every example consists of an:
+
+```text
+input grid → output grid
+```
+
+For training examples, both the input and correct output are provided.
+
+For test examples, the input is provided but the correct output is hidden and must be predicted.
+
+Conceptually, a task is structured like:
+
+```text
+Task
+├── train
+│   ├── example 1
+│   │   ├── input
+│   │   └── output
+│   ├── example 2
+│   │   ├── input
+│   │   └── output
+│   └── ...
+│
+└── test
+    ├── example 1
+    │   ├── input
+    │   └── output (hidden)
+    └── ...
+```
+
+The grids are represented as 2D arrays of integers. Each integer represents a color.
+
+The standard ARC color representation uses values from **0 to 9**, where `0` represents black and the other values represent different colors.
+
+Example:
+
+```json
+{
+  "train": [
+    {
+      "input": [[0,0,1],[0,1,1],[0,0,0]],
+      "output": [[0,0,0],[0,1,0],[1,1,0]]
+    }
+  ],
+  "test": [
+    {
+      "input": [[0,1,0],[1,1,0],[0,0,0]]
+    }
+  ]
+}
+```
+
+## Data Distribution
+
+The competition data is divided into different sets for different purposes.
+
+The important distinction is between:
+
+* **Training data:** Tasks/examples available for developing and testing systems.
+* **Public evaluation data:** Data used by Kaggle for leaderboard evaluation.
+* **Private evaluation data:** Hidden evaluation data used for the final competition ranking.
+
+The training tasks provide the examples needed to understand the benchmark and develop a system.
+
+The evaluation tasks are unseen tasks where the expected output is not directly available during prediction.
+
+The key characteristic of ARC-AGI-2 is that the dataset is **task-based rather than a conventional large tabular dataset**. Each task represents an independent reasoning problem, and the number and dimensions of grids can vary between tasks.
+
+## Grid Characteristics
+
+ARC grids are not fixed-size images.
+
+Different tasks can contain grids with different:
+
+* Heights
+* Widths
+* Number of colors
+* Number of objects
+* Spatial arrangements
+* Input/output dimensions
+
+Therefore, the dataset should be treated as a collection of variable-sized 2D discrete grids rather than a conventional fixed-size machine-learning dataset.
+
+## Evaluation
+
+Predictions are evaluated against the hidden correct outputs.
+
+A prediction is considered correct when the generated output grid exactly matches the expected output grid.
+
+The competition also allows **two prediction attempts for each test input**, giving a system two possible candidate outputs.
+
+The overall goal is to maximize the number of correctly solved evaluation tasks.
+
+## Project Context
+
+Everything in this project should be interpreted in the context of:
+
+**ARC Prize 2026 – ARC-AGI-2**
+
+The project involves working with the ARC-AGI-2 task format, its training/evaluation data, colored grid representations, Kaggle submission requirements, and competition evaluation system.
+
+**Official Kaggle Competition:**
+https://www.kaggle.com/competitions/arc-prize-2026
