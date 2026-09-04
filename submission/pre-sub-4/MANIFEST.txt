@@ -1,0 +1,13 @@
+pre-sub-4 snapshot (2026-09-05)
+Sources: battle-tested sub3 code (Unsloth 2025.9.7 healthy, 2.5/4 debug) + guards.
+Patches vs sub3:
+ 1. Guard1: startup banner HAS_UNSLOTH=...; RuntimeError abort when Unsloth missing
+    on Kaggle (ARC_REQUIRE_UNSLOTH, default 1 on /kaggle, 0 local). Never silently
+    runs the loss=0.0 fallback again (sub2 0% root cause).
+ 2. Guard2: per-task training_loss<=0/nan -> skip decode loudly; 3 consecutive -> park worker.
+ 3. Guard3: pre-train label probe prints unmasked-label count on first sequence.
+ 4. decode_batch default 2 (env ARC_DECODE_BATCH overrides; use 4 on L4).
+Notebook: arc2-hybrid-v3.ipynb built by my_notebook/build_notebook_v3.py (embeds patched arc_solver.py).
+Required Kaggle inputs: model sorokin/qwen3_4b_grids15_sft139 + own pip-install-unsloth-flash-patch utility script.
+Patch 2026-09-05: ARC_LOAD_4BIT switch (4-bit local default, bf16 on /kaggle;
+all three public notebooks run bf16 — the 33.89 baseline's only accuracy edge).
