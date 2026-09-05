@@ -266,4 +266,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"[starter] spawn finished with error: {type(e).__name__}: {e}")
         traceback.print_exc()
+        print("[starter] finished with FAILURE.")
+        sys.exit(1)  # FAIL-FAST: nonzero rc so notebook cells abort instead of continuing
     print("[starter] finished.")

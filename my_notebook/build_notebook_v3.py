@@ -99,7 +99,12 @@ def create_notebook():
             "os.makedirs(\"/kaggle/working/logs\", exist_ok=True)\n",
             "os.makedirs(\"/kaggle/working/symbolic_outputs\", exist_ok=True)\n",
             "os.makedirs(\"/kaggle/inference_outputs\", exist_ok=True)\n",
-            "os.makedirs(\"/kaggle/inference_outputs_deep\", exist_ok=True)\n"
+            "os.makedirs(\"/kaggle/inference_outputs_deep\", exist_ok=True)\n",
+            "# FAIL-FAST: unsloth utility-script output must be attached (else 12h fallback burn)\n",
+            "_u = glob.glob(\"/kaggle/usr/lib/**/unsloth/__init__.py\", recursive=True) + glob.glob(\"/kaggle/input/**/unsloth/__init__.py\", recursive=True)\n",
+            "print(\"unsloth candidates:\", _u[:3])\n",
+            "if not _u:\n",
+            "    raise SystemExit(\"FAIL-FAST: no unsloth found under /kaggle/usr/lib or /kaggle/input. Attach the pip-install-unsloth-flash-patch utility-script output via Add Input, then re-run. Aborting now to save quota.\")\n"
         ]
     })
 
@@ -203,7 +208,14 @@ def create_notebook():
             "})\n",
             "phase1_start = time.time()\n",
             "rc = subprocess.call([sys.executable, \"starter.py\", \"--end-time\", f\"{global_end_time}\", \"--order\", \"cheap\"])\n",
-            "print(f\"phase-1 rc={rc} took {(time.time()-phase1_start)/60:.1f} min; remaining {(global_end_time-time.time())/60:.1f} min\")\n"
+            "print(f\"phase-1 rc={rc} took {(time.time()-phase1_start)/60:.1f} min; remaining {(global_end_time-time.time())/60:.1f} min\")\n",
+            "# FAIL-FAST: never continue a broken run into phase-2/3 (saves quota, surfaces cause)\n",
+            "if rc != 0:\n",
+            "    raise SystemExit(f\"FAIL-FAST: phase-1 starter failed rc={rc}. Aborting instead of burning remaining budget.\")\n",
+            "_n1 = len([f for f in os.listdir(\"/kaggle/inference_outputs\")]) if os.path.isdir(\"/kaggle/inference_outputs\") else 0\n",
+            "print(f\"phase-1 neural shards: {_n1}\")\n",
+            "if _n1 == 0:\n",
+            "    raise SystemExit(\"FAIL-FAST: phase-1 produced 0 neural shards (fallback ran or all tasks crashed). Aborting instead of submitting fallbacks.\")\n"
         ]
     })
 
@@ -289,6 +301,8 @@ def create_notebook():
             "    t = time.time()\n",
             "    rc = subprocess.call([sys.executable, \"starter.py\", \"--end-time\", f\"{global_end_time}\", \"--keys-file\", keys_file, \"--order\", \"file\", \"--skip-symbolic\"], env=env)\n",
             "    print(f\"[phase-2:{name}] rc={rc} keys={len(keys)} took {(time.time()-t)/60:.1f} min; remaining {remaining()/60:.1f} min\")\n",
+            "    if rc != 0:\n",
+            "        raise SystemExit(f\"FAIL-FAST: phase-2:{name} starter failed rc={rc}. Aborting instead of assembling from partial outputs.\")\n",
             "\n",
             "# (a) Catch-up with primary configuration\n",
             "from starter import estimated_work\n",
@@ -353,6 +367,11 @@ def create_notebook():
             "decoder.load_decoded_results(\"/kaggle/working/symbolic_outputs\", run_name=\".sym\")\n",
             "decoder.load_decoded_results(\"/kaggle/inference_outputs\")\n",
             "decoder.load_decoded_results(\"/kaggle/inference_outputs_deep\", run_name=\".deep\")\n",
+            "# FAIL-FAST: refuse to submit a pure-fallback submission (0 neural shards = 0%)\n",
+            "_n_neural = sum(1 for _d in (\"/kaggle/inference_outputs\", \"/kaggle/inference_outputs_deep\") if os.path.isdir(_d) for _f in os.listdir(_d))\n",
+            "print(f\"neural shard files: {_n_neural}\")\n",
+            "if _n_neural == 0:\n",
+            "    raise SystemExit(\"FAIL-FAST: 0 neural shards across inference_outputs* — submitting would score ~0%. Aborting; inspect phase-1/2 logs.\")\n",
             "\n",
             "# Generate orthogonal/diverse attempts for each test query\n",
             "diverse_attempts = decoder.get_diverse_attempts(selection_algorithm=score_v2)\n",
