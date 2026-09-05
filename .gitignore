@@ -1,0 +1,27 @@
+# Machine outputs, datasets, reference downloads — never commit
+models/
+others/
+inference_outputs/
+test8_outputs/
+symbolic_outputs/
+markers/
+unsloth_compiled_cache/
+my_notebook/inference_outputs/
+my_notebook/markers/
+my_notebook/unsloth_compiled_cache/
+my_notebook/trainer_output/
+*.tar.gz
+symbolic_summary.json
+my_notebook/symbolic_summary.json
+__pycache__/
+*.pyc
+
+# Raw Kaggle run archives (reference only)
+submission/sub1/
+submission/sub2/
+submission/sub3/
+utility/*.log
+utility/*.txt
+log*.txt
+folback_log.txt
+download.txt
