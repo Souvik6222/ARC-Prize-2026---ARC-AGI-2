@@ -236,3 +236,57 @@ This flips `rerun_mode=True` in `starter.py`, which skips the `if not rerun_mode
 **This also explains the sub3 = 30.14 score:** your own test log showed 32 minutes and 4 tasks, but the competition scoring ran all 240 for 12 hours — and scored 30.14.
 
 **What version 8 fixes for YOU:** Your own manual test runs will now also show 240 tasks / 12 hours, so you can actually watch and verify what the competition run looks like before submitting. Before the fix, your test logs were completely unrepresentative of the real competition run.
+
+---
+
+### 10. Architectural Evaluation: Per-Shard Saves vs. Monolithic File Rewrites & Test-Set Scheduling
+
+#### A. Proposal 1: Baseline Fallback Pre-population vs. Monolithic File Rewrites
+
+**Question:** *Should we drop per-task shard saves and instead rewrite the entire `submission.json` with fallback defaults first, then overwrite with real answers as they complete?*
+
+1. **Current Pipeline Mechanism:**
+   - In **Phase 3 (Cell 11)**, the pipeline already creates a complete baseline dictionary initializing all 240 tasks to statutory fallbacks:
+     ```python
+     submission = {k: [{f'attempt_{i+1}': [[0]] for i in range(2)} for _ in range(len(data.queries[k]['test']))] for k in data.keys}
+     ```
+   - It then iterates over every solved subkey in `diverse_attempts` and overwrites the fallback with the actual model solutions (`attempt_1` = top candidate, `attempt_2` = orthogonal candidate). Tasks that timed out, failed, or lacked valid predictions safely retain their default fallbacks.
+
+2. **Why Monolithic File Rewrites from Workers is an Anti-Pattern:**
+   - **Multi-Process Concurrency Collisions:** The pipeline runs **4 worker processes in parallel** (Rank 0, 1, 2, 3) across 4 NVIDIA L4 GPUs. If all 4 workers concurrently open, parse, modify, and flush a single shared `submission.json` file, it inevitably introduces OS-level write race conditions, truncated JSON outputs, and fatal `json.decoder.JSONDecodeError` exceptions.
+   - **Destruction of Ensembling and Candidate Diversity:** Individual `.bz2` shards store full candidate beam sets, beam scores, and test-time augmentation NLL values. This rich candidate pool is required by:
+     - **Phase 2 (Catch-up / Deep pass):** Reads shards via `dec.candidate_stats()` to detect *starved* tasks (outputs with fewer than 2 unique viable predictions).
+     - **Phase 3 (Scoring & Diversification):** Executes consensus scoring (`score_v2`) and selects orthogonal, non-overlapping second attempts. Writing raw 2D arrays directly into a single file strips this metadata.
+
+3. **Recommended Production Pattern (Best of Both Worlds):**
+   - **Pre-populate Baseline at Cell 1:** Write a valid, fully formed fallback `submission.json` to `/kaggle/working/submission.json` at second zero of the notebook before launching workers.
+   - **Preserve Independent Shard Saving:** Retain per-task `.bz2` shard writes in `/kaggle/inference_outputs` so GPU workers execute 100% lock-free in parallel.
+   - **Fault-Tolerant Assembly:** Enclose Phase 1 and Phase 2 inside a `try ... finally` block ensuring Phase 3 always executes to aggregate whatever shards have been generated before notebook termination.
+
+---
+
+#### B. Proposal 2: 50% Data Partitioning & Difficulty-Tiered Scheduling (Easy $\rightarrow$ Extreme)
+
+**Question:** *Can we identify the 50% public data and categorize tasks into Easy, Medium, Hard, and Extreme to prioritize compute?*
+
+1. **Kaggle Evaluation Mechanics & Test Set Reality:**
+   - In ARC Prize 2026, the submission rerun executes against a **completely secret, private test set** (`arc-agi_test_challenges.json`).
+   - Kaggle splits this hidden set internally into ~50% Public Leaderboard and ~50% Private Leaderboard.
+   - **Both splits are combined into the exact same test file.** Task IDs are scrambled, and neither the competitor nor the code can determine which task maps to Public vs. Private. You cannot selectively run only public tasks or defer private tasks.
+
+2. **Difficulty-Tiered Scheduling (Already Implemented Across 3 Layers):**
+   The core optimization principle—prioritizing cheap/easy tasks and rationing compute on extreme tasks—is already fully active in the pipeline:
+
+   - **Layer 0: Instant CPU Symbolic Pre-Pass (`run_symbolic_prepass`)**
+     - Before GPU initialization, a fast deterministic symbolic engine tests geometric and color invariants on CPU (~0.05s).
+     - Tasks solved with 100% verified demonstration rules are marked complete and **completely excluded from the GPU queue**, freeing GPU hours.
+
+   - **Layer 1: Token-Cost Work Estimation (`order=cheap`)**
+     - `starter.py` computes an empirical complexity metric per puzzle:
+       $$\text{Work} = (\text{train\_tokens} \times 16) + (\text{test\_tokens} \times 8 \times n_{\text{test}})$$
+     - Tasks are sorted ascending by work unit (`--order cheap`). All Easy and Medium puzzles are solved in the first few hours, locking in points early.
+
+   - **Layer 2: Adaptive Throttling on Heavy/Extreme Puzzles**
+     - In `arc_solver.py`, tasks with work units $> 50,000$ (`ARC_WORK_CUT`) are classified as `heavy`.
+     - The trainer automatically cuts training augmentations from **16 down to 8** (`heavy_n_train_aug`) to protect memory and runtime.
+     - A hard ceiling of `task_cap = 1200s` (20 minutes) prevents any single extreme task from starving the rest of the queue.
