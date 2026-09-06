@@ -10,22 +10,6 @@ os.environ.setdefault("PYTORCH_ALLOC_CONF", "expandable_segments:True")
 
 sys.setrecursionlimit(5000)
 
-import site
-# Prioritize real system site-packages so real PyTorch and NumPy are loaded
-for sp in reversed(site.getsitepackages()):
-    if sp in sys.path:
-        sys.path.remove(sp)
-    sys.path.insert(0, sp)
-
-# Remove any broken torchao from sys.modules
-if "torchao" in sys.modules:
-    del sys.modules["torchao"]
-
-# Purge legacy utility script shadow folders that contain incompatible Python 3.11 numpy binaries
-sys.path = [p for p in sys.path if "pip_install_unsloth_flash_patch" not in p and "usr/lib/notebooks" not in p]
-if "PYTHONPATH" in os.environ:
-    os.environ["PYTHONPATH"] = ":".join([p for p in os.environ["PYTHONPATH"].split(":") if "pip_install_unsloth_flash_patch" not in p and "usr/lib" not in p])
-
 # Discover unsloth from Kaggle utility scripts or input datasets and append to sys.path
 _unsloth_search_paths = (
     glob.glob("/kaggle/usr/lib/notebooks/*/pip_install_unsloth*") +
@@ -33,27 +17,67 @@ _unsloth_search_paths = (
     glob.glob("/kaggle/usr/lib/**", recursive=True) +
     glob.glob("/kaggle/input/**/unsloth", recursive=True)
 )
+_bundle_roots = []
 for p in _unsloth_search_paths:
     if os.path.isdir(p):
         if os.path.isfile(os.path.join(p, "unsloth", "__init__.py")):
-            if p not in sys.path:
-                sys.path.append(p)
+            if p not in _bundle_roots:
+                _bundle_roots.append(p)
         elif os.path.basename(p) == "unsloth" and os.path.isfile(os.path.join(p, "__init__.py")):
             parent = os.path.dirname(p)
-            if parent not in sys.path:
-                sys.path.append(parent)
+            if parent not in _bundle_roots:
+                _bundle_roots.append(parent)
+
+# Priority flip: a verified bundle root carries its own self-consistent stack
+# (torch/transformers/triton/unsloth, e.g. torch 2.8.0 + transformers 4.55.4).
+# It must win over system site-packages so the prebuilt stack is loaded uniformly.
+for _b in reversed(_bundle_roots):
+    if _b in sys.path:
+        sys.path.remove(_b)
+    sys.path.insert(0, _b)
+if _bundle_roots:
+    print(f"[arc_solver] bundle roots at sys.path front: {_bundle_roots}", flush=True)
+
+# Compatibility shims for torch 2.8.0 + transformers/torchao
+try:
+    import torch
+    import torch.nn.functional as F
+    from enum import Enum
+
+    if not hasattr(F, "ScalingType"):
+        class ScalingType(Enum):
+            DELAYED = "delayed"
+            DYNAMIC = "dynamic"
+            Delayed = "delayed"
+            Dynamic = "dynamic"
+        F.ScalingType = ScalingType
+
+    if not hasattr(F, "scaled_grouped_mm"):
+        def _scaled_grouped_mm(*args, **kwargs):
+            return None
+        F.scaled_grouped_mm = _scaled_grouped_mm
+except Exception as _shim_e:
+    print(f"[arc_solver shim] F patch warning: {_shim_e}", flush=True)
+
+try:
+    import transformers.utils.import_utils as _tiu
+    _tiu.is_torchao_available = lambda: False
+except Exception:
+    pass
 
 try:
     from unsloth import FastLanguageModel, UnslothTrainingArguments, UnslothTrainer
     HAS_UNSLOTH = True
     _unsloth_import_error = ""
-except ImportError as _e:
+except Exception as _e:
+    # NOTE: broad catch is deliberate — version-skewed bundles die with NameError/
+    # AttributeError (not ImportError); any failure means unsloth is unusable.
     HAS_UNSLOTH = False
     _unsloth_import_error = f"{type(_e).__name__}: {_e}"
     try:
         from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments, Trainer
         from peft import LoraConfig, get_peft_model
-    except ImportError as _e2:
+    except Exception as _e2:
         # e.g. transformers' Trainer pull-ins (torchao quantizer) can explode when versions
         # mismatch — surface the actionable message instead of a cryptic traceback.
         raise RuntimeError(
@@ -120,6 +144,9 @@ CFG = dict(
     score_seed_off  = _env("ARC_SCORE_SEED_OFFSET", 0, int),
     decode_batch    = _env("ARC_DECODE_BATCH", 2, int),
     early_stop_loss = _env("ARC_EARLY_STOP_LOSS", 5e-4, float), # TTT loss threshold for early stop
+    train_cap       = _env("ARC_TRAIN_CAP", 600, float),  # max seconds of TTT per task (stall containment)
+    work_cut        = _env("ARC_WORK_CUT", 50000, float), # work units above which a task counts as heavy (~p90)
+    heavy_n_train_aug = _env("ARC_N_TRAIN_AUG_HEAVY", 8, int), # train augs for heavy tasks (vs n_train_aug)
 )
 
 ARC_VOCAB = {
@@ -182,6 +209,31 @@ class EarlyStoppingOnLossCallback(TrainerCallback):
                 control.should_training_stop = True
 
 
+class TimeLimitCallback(TrainerCallback):
+    """Stops TTT fine-tuning after a wall-clock cap (stall containment, e.g. aa4ec2a5 97min)."""
+    def __init__(self, max_seconds=600):
+        self.max_seconds = max_seconds
+        self._t0 = None
+
+    def on_train_begin(self, args, state, control, **kwargs):
+        self._t0 = time.time()
+
+    def on_step_end(self, args, state, control, **kwargs):
+        if self._t0 is not None and self.max_seconds > 0 and (time.time() - self._t0) > self.max_seconds:
+            control.should_training_stop = True
+
+
+def _local_work(task):
+    """Token-cost proxy mirroring starter.estimated_work (local copy: starter imports this module)."""
+    def ntok(g):
+        return len(g) * (len(g[0]) + 1)
+    train_tokens = sum(ntok(p["input"]) + ntok(p["output"]) for p in task["train"])
+    ratios = sorted(ntok(p["output"]) / max(1, ntok(p["input"])) for p in task["train"])
+    ratio = ratios[len(ratios) // 2]
+    test_tokens = sum(ntok(t["input"]) * (1 + ratio) for t in task["test"])
+    return train_tokens * 16 + test_tokens * 8 * len(task["test"])
+
+
 class UnslothFixedTrainer(UnslothTrainer):
 
     def __init__(self, *args, **kwargs):
@@ -230,7 +282,13 @@ class UnslothFixedTrainer(UnslothTrainer):
 class QwenDataCollatorForCompletionOnlyLM(DataCollatorForLanguageModeling):
 
     def torch_call(self, examples: list[Union[list[int], Any, dict[str, Any]]]) -> dict[str, Any]:
-        batch = super().torch_call(examples)
+        clean_examples = []
+        for ex in examples:
+            if isinstance(ex, dict):
+                clean_examples.append({k: v for k, v in ex.items() if k in ("input_ids", "attention_mask", "labels")})
+            else:
+                clean_examples.append(ex)
+        batch = super().torch_call(clean_examples)
         for i in range(len(examples)):
             labels = batch["input_ids"][i].clone()
             labels_np = labels.detach().cpu().numpy()
@@ -604,6 +662,8 @@ def worker(rank, queue, end_time, test_path=None):
     os.makedirs(dir_outputs, exist_ok=True)
 
     early_stop_cb = EarlyStoppingOnLossCallback(threshold=CFG["early_stop_loss"])
+    time_limit_cb = TimeLimitCallback(max_seconds=CFG["train_cap"])
+    train_callbacks = ([early_stop_cb] if CFG.get("early_stop_loss", 0) > 0 else []) + [time_limit_cb]
 
     _zero_loss_streak = 0  # Guard2: consecutive tasks with training_loss<=0 (systematic failure -> park worker)
 
@@ -634,22 +694,26 @@ def worker(rank, queue, end_time, test_path=None):
                 model = FastLanguageModel.for_training(model)
 
             puzzle_ds = arc_test_set.change_keys([key])
-            train_ds = puzzle_ds.augment(n=CFG["n_train_aug"], shfl_keys=True, seed=CFG["train_aug_seed"])
+            # Budget allocation: heavy-tail tasks get fewer train augs so the fixed time
+            # budget covers more tasks instead of stalling on giants.
+            _work = _local_work(arc_test_set.queries[key])
+            _n_train_aug = CFG["heavy_n_train_aug"] if _work > CFG["work_cut"] else CFG["n_train_aug"]
+            if _n_train_aug != CFG["n_train_aug"]:
+                print(f"[Rank {rank}] puzzle {key}: heavy (work={_work:.0f} > {CFG['work_cut']:.0f}), train_aug {CFG['n_train_aug']}->{_n_train_aug}", flush=True)
+            train_ds = puzzle_ds.augment(n=_n_train_aug, shfl_keys=True, seed=CFG["train_aug_seed"])
             train_ds = train_ds.cut_to_len(formatter=formatter, name="text", max_len=max_seq_length)
 
+            train_items = []
+            for item in train_ds.as_list(formatter):
+                tokens = tokenizer.encode(item["text"])
+                train_items.append({"input_ids": tokens})
+            train_data = Dataset.from_list(train_items)
+
             if HAS_UNSLOTH:
-                train_data = Dataset.from_list(train_ds.as_list(formatter))
                 extra_kwargs = dict(
-                    dataset_text_field="text",
-                    max_seq_length=max_seq_length,
                     args=UnslothTrainingArguments(**train_args),
                 )
             else:
-                train_items = []
-                for item in train_ds.as_list(formatter):
-                    tokens = tokenizer.encode(item["text"])
-                    train_items.append({"input_ids": tokens})
-                train_data = Dataset.from_list(train_items)
                 extra_kwargs = dict(
                     args=make_training_args(**train_args),
                 )
@@ -676,7 +740,7 @@ def worker(rank, queue, end_time, test_path=None):
                     tokenizer=tokenizer,
                     data_collator=collator,
                     train_dataset=train_data,
-                    callbacks=[early_stop_cb] if CFG.get("early_stop_loss", 0) > 0 else [],
+                    callbacks=train_callbacks,
                     **extra_kwargs,
                 )
                 stats = trainer.train()

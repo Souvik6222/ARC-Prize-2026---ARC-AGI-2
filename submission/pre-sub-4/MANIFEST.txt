@@ -11,3 +11,10 @@ Notebook: arc2-hybrid-v3.ipynb built by my_notebook/build_notebook_v3.py (embeds
 Required Kaggle inputs: model sorokin/qwen3_4b_grids15_sft139 + own pip-install-unsloth-flash-patch utility script.
 Patch 2026-09-05: ARC_LOAD_4BIT switch (4-bit local default, bf16 on /kaggle;
 all three public notebooks run bf16 — the 33.89 baseline's only accuracy edge).
+Snapshot 2026-09-05 (2): budget controls (ARC_TRAIN_CAP=600, adaptive 8-aug for
+work>50000, 21/240 test tasks) + notebook fail-fast gates (env/phase/shard checks)
++ starter sys.exit(1) on worker-spawn failure.
+Snapshot 2026-09-06: sys.path priority flip (verified bundle roots front so the
+prebuilt torch 2.8.0 stack wins over system packages) + broadened Unsloth guard
+(any import failure -> clean RuntimeError) + starter exit-1 + notebook fail-fast
+gates. Awaiting a working fork output (saved snapshots verified stubs-only).
