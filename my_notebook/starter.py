@@ -5,14 +5,37 @@ import os
 # Fix6: must be set before torch CUDA init
 os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 os.environ.setdefault("PYTORCH_ALLOC_CONF", "expandable_segments:True")
-import sys, site
-for sp in reversed(site.getsitepackages()):
-    if sp in sys.path:
-        sys.path.remove(sp)
-    sys.path.insert(0, sp)
-sys.path = [p for p in sys.path if "pip_install_unsloth_flash_patch" not in p and "usr/lib/notebooks" not in p]
-if "PYTHONPATH" in os.environ:
-    os.environ["PYTHONPATH"] = ":".join([p for p in os.environ["PYTHONPATH"].split(":") if "pip_install_unsloth_flash_patch" not in p and "usr/lib" not in p])
+import sys, glob
+
+# Discover unsloth bundle roots (from attached utility scripts or input datasets)
+_unsloth_search_paths = (
+    glob.glob("/kaggle/usr/lib/notebooks/*/pip_install_unsloth*") +
+    glob.glob("/kaggle/usr/lib/notebooks/*/*/pip_install_unsloth*") +
+    glob.glob("/kaggle/usr/lib/**", recursive=True) +
+    glob.glob("/kaggle/input/**/unsloth", recursive=True)
+)
+_bundle_roots = []
+for p in _unsloth_search_paths:
+    if os.path.isdir(p):
+        if os.path.isfile(os.path.join(p, "unsloth", "__init__.py")):
+            if p not in _bundle_roots:
+                _bundle_roots.append(p)
+        elif os.path.basename(p) == "unsloth" and os.path.isfile(os.path.join(p, "__init__.py")):
+            parent = os.path.dirname(p)
+            if parent not in _bundle_roots:
+                _bundle_roots.append(parent)
+
+# Prepend bundle roots to sys.path and PYTHONPATH before importing torch so that
+# the self-contained torch 2.8.0 + torchvision + transformers 4.55.4 + unsloth 2025.9.7
+# stack is imported consistently in starter and all spawned workers.
+for _b in reversed(_bundle_roots):
+    if _b in sys.path:
+        sys.path.remove(_b)
+    sys.path.insert(0, _b)
+if _bundle_roots:
+    _cur = os.environ.get("PYTHONPATH", "")
+    os.environ["PYTHONPATH"] = ":".join(_bundle_roots + ([_cur] if _cur else []))
+    print(f"[starter] bundle roots at sys.path front: {_bundle_roots}", flush=True)
 
 import time
 import json
@@ -22,6 +45,33 @@ try:
 except ImportError:
     torch = None
     import multiprocessing as mp
+
+# Compatibility shims for torch 2.8.0 + transformers/torchao
+try:
+    import torch
+    import torch.nn.functional as F
+    from enum import Enum
+
+    if not hasattr(F, "ScalingType"):
+        class ScalingType(Enum):
+            DELAYED = "delayed"
+            DYNAMIC = "dynamic"
+            Delayed = "delayed"
+            Dynamic = "dynamic"
+        F.ScalingType = ScalingType
+
+    if not hasattr(F, "scaled_grouped_mm"):
+        def _scaled_grouped_mm(*args, **kwargs):
+            return None
+        F.scaled_grouped_mm = _scaled_grouped_mm
+except Exception:
+    pass
+
+try:
+    import transformers.utils.import_utils as _tiu
+    _tiu.is_torchao_available = lambda: False
+except Exception:
+    pass
 
 import argparse
 import traceback
@@ -192,8 +242,14 @@ if __name__ == "__main__":
             keys = [k for k in json.load(f) if k in data]
     else:
         keys = sorted(data.keys())
-        if not rerun_mode:
-            debug_keys = os.getenv("ARC_DEBUG_KEYS", "0934a4d8,36a08778,981571dc,aa4ec2a5").split(",")
+        # NOTE: debug key filter removed — ARC_DEBUG_KEYS only applied when explicitly set
+        # KAGGLE_IS_COMPETITION_RERUN is NOT set during user "Save & Run" submissions,
+        # only during the official competition rerun (auto-grading). Previously this
+        # block was filtering ALL manual submissions to only 4 debug tasks, causing
+        # 32-min runs instead of 12-hour full 240-task runs.
+        debug_keys_env = os.getenv("ARC_DEBUG_KEYS", "")
+        if debug_keys_env:
+            debug_keys = [k.strip() for k in debug_keys_env.split(",") if k.strip()]
             keys = [k for k in keys if k in debug_keys]
 
     # 1. Run Symbolic Pre-Pass
