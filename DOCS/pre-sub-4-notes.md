@@ -70,3 +70,44 @@ would not have recovered any of these points.
   park worker.
 - Guard3: pre-train probe prints first-sequence unmasked-label count (~100+).
 - `ARC_LOAD_4BIT`: 1 local, 0 on Kaggle. `ARC_DECODE_BATCH` default 2.
+
+## 6. Fail-fast gates (notebook stops instead of burning quota)
+
+"Save version & Run" now aborts within minutes on any repeat of the 0% failure,
+with a message naming the cause:
+
+- Env cell: no unsloth under `/kaggle/usr/lib` or `/kaggle/input` → SystemExit
+  (attach the utility-script output first).
+- Phase-1 cell: starter `rc != 0` → abort; 0 neural shards → abort.
+- Phase-2 cells: `rc != 0` → abort per phase.
+- Phase-3 cell: 0 neural shard files across both output dirs → abort instead of
+  writing an all-fallback submission.
+- `starter.py`: worker-spawn exceptions now `sys.exit(1)` (was: print and return
+  0, which let later phases run vacuously).
+
+Limit: only absolute-zero failures trip the gates; partial failures (half the
+tasks OOM) still run to assembly.
+
+## 7. Budget allocation controls (more tasks through TTT)
+
+Per-task calibration on RTX 4070 (4-bit): ~0.006–0.018 s/work-unit. The tail
+(giants + stalls) eats the fixed budget, so:
+
+- `ARC_TRAIN_CAP=600` (s): `TimeLimitCallback` stops TTT per task after 10 min
+  of training. Bounds the aa4ec2a5 stall class (97 min → ≤10 min).
+- Adaptive augments: tasks with work > `ARC_WORK_CUT=50000` (~p90) train on
+  `ARC_N_TRAIN_AUG_HEAVY=8` augments instead of 16 — 21/240 test tasks.
+  Estimator is a local copy of `starter.estimated_work` (verified byte-equal;
+  kept local because starter imports this module).
+- Composes with early-stop (fires first on easy tasks) and decode `task_cap`.
+
+Expected: heavy-tail train cost roughly halved → on the order of +10–20 extra
+tasks through TTT on a 12h 4-GPU rerun. Quality risk bounded to top-decile tasks.
+
+## 8. Repo hygiene
+
+- `.gitignore`: models, outputs, reference downloads, raw sub1/2/3 archives stay
+  untracked. `pre-sub-4/`, `DOCS/`, sources, utility fork stay committable.
+- Branches: `main` (all work) + `original` (2-commit pre-work state), both pushed.
+- `utility/`: own pinned unsloth fork (torch 2.8.0, cp312 flash-attn, qwen3 patch
+  applied, output snapshot verified) — attach its output in the Kaggle notebook.
