@@ -1,0 +1,59 @@
+submitted in 249 sec:
+
+
+
+Time
+	
+#
+	
+Log Message
+10.0s	1	/usr/local/lib/python3.12/dist-packages/nbformat/__init__.py:96: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.
+10.0s	2	  validate(nb)
+11.3s	3	0.00s - Debugger warning: It seems that frozen modules are being used, which may
+11.3s	4	0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+11.3s	5	0.00s - to python to disable frozen modules.
+11.3s	6	0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+12.1s	7	0.00s - Debugger warning: It seems that frozen modules are being used, which may
+12.1s	8	0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+12.1s	9	0.00s - to python to disable frozen modules.
+12.1s	10	0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+13.6s	11	[BUDGET] rerun_mode=False | budget=0.10h | cutoff=Mon Sep  7 08:24:13 2026
+13.6s	12	Resolved target dataset path: /kaggle/input/competitions/arc-prize-2026-arc-agi-2/arc-agi_test_challenges.json
+13.6s	13	*** Pre-populated baseline submission.json: 240 tasks (sha256=3739be35dbba)
+15.4s	14	Found existing installation: tensorflow 2.20.0
+19.2s	15	Uninstalling tensorflow-2.20.0:
+53.3s	16	  Successfully uninstalled tensorflow-2.20.0
+54.1s	17	Found existing installation: torchao 0.10.0
+54.2s	18	Uninstalling torchao-0.10.0:
+54.8s	19	  Successfully uninstalled torchao-0.10.0
+153.8s	20	bundle roots at sys.path front: ['/kaggle/input/notebooks/soukeaizenz/pip-install-unsloth-flash-patch-fork']
+209.2s	21	3.12.13 torch 2.8.0+cu128 gpus 4 ['NVIDIA L4', 'NVIDIA L4', 'NVIDIA L4', 'NVIDIA L4']
+209.2s	22	torch location: /kaggle/input/notebooks/soukeaizenz/pip-install-unsloth-flash-patch-fork/torch/__init__.py
+209.2s	23	models: ['/kaggle/input/models/sorokin/qwen3_4b_grids15_sft139'] []
+209.2s	24	utility scripts: []
+237.3s	25	unsloth candidates: ['/kaggle/input/notebooks/soukeaizenz/pip-install-unsloth-flash-patch-fork/unsloth/__init__.py']
+237.3s	26	Writing arc_loader.py
+237.4s	27	Writing arc_invariants.py
+237.4s	28	Writing arc_symbolic.py
+237.4s	29	Writing arc_decoder.py
+237.4s	30	Writing arc_solver.py
+237.4s	31	Writing starter.py
+237.5s	32	[COMMIT-MODE] Fast-path active: skipping Phase 1 TTT (0 tasks evaluated) to complete commit in ~1 min.
+237.5s	33	[COMMIT-MODE] Full 11.83h 4xL4 GPU search will execute automatically during Competition Scoring Run (RERUN=1).
+237.5s	34	[COMMIT-MODE] Fast-path active: skipping Phase 2.
+237.6s	35	*** Load solutions from '/kaggle/input/competitions/arc-prize-2026-arc-agi-2/arc-agi_evaluation_solutions.json'...
+237.6s	36	*** Loaded 0 shards / 0 samples from /kaggle/working/symbolic_outputs (skipped 0)
+237.6s	37	*** Loaded 0 shards / 0 samples from /kaggle/inference_outputs (skipped 0)
+237.6s	38	*** Loaded 0 shards / 0 samples from /kaggle/inference_outputs_deep (skipped 0)
+237.6s	39	neural shard files: 0
+237.6s	40	*** wrote submission.json: 240 tasks, 259 outputs, 0 model predictions, 259 fallbacks, sha256=3739be35dbba
+237.6s	41	*** submission schema verified OK!
+243.2s	42	/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\|'
+243.2s	43	  cells[i][c] = re.sub('\\\\\|', '|', cell)
+243.3s	44	/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\_'
+243.3s	45	  text = re.sub(r'_', '\_', text) # Escape underscores in display text
+244.1s	46	[NbConvertApp] Converting notebook __notebook__.ipynb to notebook
+244.4s	47	[NbConvertApp] Writing 153000 bytes to __notebook__.ipynb
+247.1s	48	[NbConvertApp] Converting notebook __notebook__.ipynb to html
+248.3s	49	[NbConvertApp] Writing 859773 bytes to __results__.html
+
