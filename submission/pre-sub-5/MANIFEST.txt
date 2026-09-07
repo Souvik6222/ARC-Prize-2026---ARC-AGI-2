@@ -61,3 +61,23 @@ Derived from frontier analysis of the 33.89% baseline (`others/failed-in-aimo.ip
 - arc_invariants.py: Geometric and color invariant transformations.
 - arc_loader.py: Data serialization, grid encoding, and multi-test splitting.
 - MANIFEST.txt: This specification file.
+
+6. KAGGLE GPU QUOTA & EXECUTION LIFECYCLE (CRITICAL NOTICE)
+--------------------------------------------------------------------------------
+- Commit Mode ("Save & Run All" / `kaggle kernels push`):
+  Runs on personal weekly GPU quota (30 hours/week limit). KAGGLE_IS_COMPETITION_RERUN
+  is unset.
+- Competition Scoring Mode:
+  Runs on dedicated competition compute (0 personal quota used). Kaggle sets
+  KAGGLE_IS_COMPETITION_RERUN=1.
+- Why Sub-5 Version 1 is running for 11.33h in Commit:
+  In starter.py line 241, the debug key filter was commented out, causing the manual
+  commit run to attempt processing all 100+ tasks for 11.33 hours on personal quota.
+- Operational Decision:
+  Because of the strict 1 submission per day competition rule, and because Version 1
+  is running stably and solving tasks on 4x L4 GPUs, Version 1 is left running to
+  completion to produce today's final submission.json.
+- For Sub-6 and future submissions, the dual-mode gate (35 min on commit, 11.83h on
+  competition rerun) must be preserved.
+- See detailed documentation in KAGGLE_EXECUTION_LIFECYCLE.md and
+  DOCS/kaggle-gpu-quota-and-execution-lifecycle.md.
