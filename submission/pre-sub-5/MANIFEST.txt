@@ -1,0 +1,63 @@
+pre-sub-5 snapshot (2026-09-07) — Unified Production Pipeline (ARC-AGI-2)
+================================================================================
+
+1. CRITICAL BUG FIXES
+--------------------------------------------------------------------------------
+- Fix 1: Left-Truncation Fix (Root cause of Sub-3 silent loss=0.0):
+  * In Sub-3, HuggingFace default `tokenizer.truncation_side = "right"` truncated prompts
+    >8192 tokens by chopping off the right tail (which contains the assistant response
+    tokens `<|im_start|>assistant\n...`). This masked all target labels with -100,
+    causing loss=0.0 and false early-stopping at step 16 on all 688 training sequences.
+  * In `arc_solver.py`: Explicitly forced `tokenizer.truncation_side = "left"`.
+    Target tokens and assistant answers are guaranteed preserved during TTT.
+  * Disabled zero-loss early stopping (`early_stop_loss = 0.0`) and added explicit
+    guard treating `loss <= 0.0` as untargeted failure rather than convergence.
+
+- Fix 2: Dataset Path Drift & Task Filter Fix (Root cause of Sub-4 28.06% score):
+  * In Sub-4, `starter.py` resolved dataset path independently without receiving
+    `--test-path` from the notebook, falling back to evaluation challenges and
+    triggering debug key limits. Shards were rejected during decoder evaluation,
+    falling back entirely to identity input grids (pure 28.06% baseline score).
+  * In `starter.py` & `arc2-hybrid-v5.ipynb`: Added explicit `--test-path` CLI
+    parameter, ensuring Phase 1, Phase 2, and Phase 3 all bind to the exact same
+    hidden test set path (`arc-agi_test_challenges.json`). Removed hardcoded debug
+    filter so all test tasks are scheduled.
+
+2. HARDWARE UNLEASH (4x NVIDIA L4 24GB GPUs)
+--------------------------------------------------------------------------------
+Derived from frontier analysis of the 33.89% baseline (`others/failed-in-aimo.ipynb`):
+- LoRA Rank: Scaled from $r=64$ to $r=256$ (`use_rslora=True`, `lora_alpha=256`).
+- Gradient Checkpointing: Disabled (`use_gradient_checkpointing=False`, `ARC_GRAD_CKPT=0`),
+  yielding ~30% faster backpropagation on 24GB L4 VRAM without OOM.
+- Decode Batch: Doubled from 2 to 4 (`ARC_DECODE_BATCH=4`) for high-throughput DFS search.
+- Augmentations: Full 16 train augmentations enabled across all tasks
+  (`ARC_N_TRAIN_AUG=16`, `ARC_N_TRAIN_AUG_HEAVY=16`).
+
+3. SCORING & CANDIDATE DIVERSITY
+--------------------------------------------------------------------------------
+- Reverted candidate ranking from destructive `score_v2` penalties to pure consensus
+  `score_kgmon` (Vote Count minus Mean Augmented NLL).
+- Preserved exact symbolic solver bonus (+1000.0) from Sub-3, which solved 7 tasks
+  deterministically.
+- Hardened schema validation with fallback to identity input grid for attempt 1 and
+  [[0]] for attempt 2 if model predictions fail or match attempt 1.
+
+4. SAFETY & FAIL-SAFE ARCHITECTURE
+--------------------------------------------------------------------------------
+- Cell 1 Baseline Pre-population: Immediately generates a valid `submission.json`
+  at notebook start (second 0). Even if a catastrophic hardware timeout occurs,
+  the submission is never empty or invalid.
+- Phase 2 Try/Finally Fail-safe: Wrapped adaptive catch-up pass in try/finally blocks
+  so any exception or timeout cascades immediately to Phase 3 assembly and output
+  verification without failing the submission run.
+
+5. FILES IN PRE-SUB-5
+--------------------------------------------------------------------------------
+- arc2-hybrid-v5.ipynb: Self-contained Kaggle submission notebook.
+- arc_solver.py: LoRA TTT engine with left-truncation and r=256 RSLoRA.
+- starter.py: Multi-GPU orchestrator with explicit --test-path propagation.
+- arc_decoder.py: Pure score_kgmon candidate selection and multi-shard loader.
+- arc_symbolic.py: Fast CPU symbolic solver (7 proven deterministic solves).
+- arc_invariants.py: Geometric and color invariant transformations.
+- arc_loader.py: Data serialization, grid encoding, and multi-test splitting.
+- MANIFEST.txt: This specification file.
