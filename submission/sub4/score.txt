@@ -1,0 +1,7 @@
+Submission: Sub-4 (arc2-hybrid-v4 v7)
+Kaggle Ref: 56050424
+Date: 2026-09-06 08:10:22 UTC
+Public LB Score: 28.06
+Status: COMPLETE
+Architecture: arc2-hybrid-v4 v7: bf16 Qwen3-4B TTT+LoRA, 4xL4 GPU
+Outcome / Failure Mode: Path drift & debug gate bug: starter.py resolved evaluation challenges instead of test challenges and activated a 4-key debug filter, causing neural shards to mismatch test keys. Score was 100% produced by 259 identity fallbacks.

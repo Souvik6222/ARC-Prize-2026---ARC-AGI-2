@@ -1,0 +1,9 @@
+Submission: Sub-6 (arc2-hybrid-v6)
+Kaggle Ref: 56092781
+Date: 2026-09-08 06:43:08 UTC
+Public LB Score: 0.00
+Status: COMPLETE
+Architecture: arc2-hybrid-v6: guaranteed greedy neural shards, modal row rectification, score_kgmon
+Outcome / Failure Mode: Two compounding bugs caused 0.00 score:
+1. inference_greedy_pass called model() without position_ids. Under Unsloth inference, this threw AttributeError: 'NoneType' object has no attribute 'max' in rotary embedding computation, crashing decoding on all puzzles (0 neural shards saved).
+2. Cell 9 (if rc != 0) and Cell 11 (if n_valid_samples == 0) executed raise SystemExit, aborting notebook execution before Phase 3 could assemble symbolic solutions. Kaggle graded the second-zero identity fallback baseline (sha256=3739be35dbba), which scores 0.00% on ARC-AGI-2.

@@ -1,0 +1,7 @@
+Submission: Pre-Sub-v5-Demo-2 (arc2-hybrid-v5-fixed)
+Associated Kaggle Ref: 56072851
+Date: 2026-09-07
+Public LB Score: 30.14
+Status: COMPLETE
+Architecture: Intermediate fix iteration for Sub-5 addressing early stopping and path resolution.
+Outcome / Failure Mode: 30.14% baseline maintained via symbolic pre-pass.

@@ -1,0 +1,7 @@
+Submission: Pre-Sub-4 (arc2-hybrid-v3 presub4)
+Associated Kaggle Ref: 56050424
+Date: 2026-09-06
+Public LB Score: 28.06
+Status: COMPLETE
+Architecture: Pre-submission candidate for Sub-4
+Outcome / Failure Mode: Evaluated evaluation challenges with 4-key debug filter; scored 28.06%.

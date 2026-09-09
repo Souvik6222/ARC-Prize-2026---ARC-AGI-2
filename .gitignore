@@ -33,3 +33,6 @@ submission/sub4/
 
 *.tar.xz
 scratch/
+
+# Track score.txt across all submission folders
+!submission/**/score.txt

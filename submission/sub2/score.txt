@@ -1,0 +1,7 @@
+Submission: Sub-2 (souvik)
+Kaggle Ref: 56006166
+Date: 2026-09-04 05:46:41 UTC
+Public LB Score: 0.00
+Status: COMPLETE
+Architecture: Qwen3-4B bf16 LoRA TTT + 4xL4 multi-GPU orchestrator
+Outcome / Failure Mode: C-extension symbol clash in custom kernel loader; notebook aborted.

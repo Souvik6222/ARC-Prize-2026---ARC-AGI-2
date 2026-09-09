@@ -1,0 +1,7 @@
+Submission: Sub-1
+Kaggle Ref: 55957562
+Date: 2026-09-02 07:58:27 UTC
+Public LB Score: 0.00
+Status: COMPLETE
+Architecture: Initial baseline attempt with custom kernel loader
+Outcome / Failure Mode: Module initialization crash due to Unsloth / Torch ABI incompatibility.

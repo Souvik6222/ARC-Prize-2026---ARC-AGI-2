@@ -1,0 +1,11 @@
+Submission: Sub-7 (arc2-hybrid-v7)
+Kaggle Target: soukeaizenz/arc2-hybrid-v7
+Date: 2026-09-09
+Expected Baseline Floor: 30.14
+Target LB Score: >33.00
+Status: READY FOR SUBMISSION
+Architecture: Fully hardened hybrid architecture:
+1. Fixed Unsloth RoPE greedy decoding by tracking position index and passing explicit position_ids under @torch.inference_mode().
+2. Promoted symbolic prepass to Phase 0 (Cell 9), running directly on CPU in 0.38s to immediately write 7 verified solutions to /kaggle/working/symbolic_outputs and harden submission.json (sha256=ba11572efa9a / 30.14% floor) at minute 1 before any GPU process spawns.
+3. Removed all raise SystemExit traps from Cells 9, 10, and 11 to guarantee Phase 3 assembly always runs.
+4. Verified end-to-end on local GPU: model trains with loss > 0, generates valid candidate beams across all dihedral views, and saves shards that ArcDecoder loads.

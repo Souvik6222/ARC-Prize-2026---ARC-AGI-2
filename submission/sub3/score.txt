@@ -1,0 +1,7 @@
+Submission: Sub-3 (arc2-nvarc-v2_fork)
+Kaggle Ref: 56022543
+Date: 2026-09-05 01:27:04 UTC
+Public LB Score: 30.14
+Status: COMPLETE
+Architecture: 7 exact CPU symbolic rules (run_symbolic_prepass) + Qwen3-4B LoRA TTT + DFS
+Outcome / Failure Mode: Silent loss=0.0 failure across 688/688 sequences due to HuggingFace default right-truncation chopping off assistant target turn. 0 neural shards loaded. Score of 30.14% was 100% produced by 7 symbolic rules + 252 identity fallbacks (sha256=ba11572efa9a).

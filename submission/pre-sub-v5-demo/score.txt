@@ -1,0 +1,7 @@
+Submission: Sub-5 (arc2-hybrid-v5-demo)
+Kaggle Ref: 56072851
+Date: 2026-09-07 08:27:13 UTC
+Public LB Score: 30.14
+Status: COMPLETE
+Architecture: arc2-hybrid-v5-demo: left-truncation, r=256 RSLoRA, pure score_kgmon
+Outcome / Failure Mode: Left-truncation successfully restored non-zero training loss (loss ~0.01-0.03). However, recursive turbo_dfs search without beam guarantees timed out, yielding 0 neural shards. Phase 3 safely loaded 7 exact symbolic solutions from symbolic_outputs, achieving 30.14% (sha256=ba11572efa9a).

@@ -1,0 +1,7 @@
+Submission: Pre-Sub-5 (arc2-hybrid-v5)
+Associated Kaggle Ref: 56072851
+Date: 2026-09-07
+Public LB Score: 30.14
+Status: COMPLETE
+Architecture: Unified pipeline candidate for Sub-5
+Outcome / Failure Mode: Left-truncation fixed loss=0.0 bug, but recursive DFS timeouts resulted in 0 neural shards. Phase 3 assembled 7 exact symbolic rules (sha256=ba11572efa9a) achieving 30.14%.
