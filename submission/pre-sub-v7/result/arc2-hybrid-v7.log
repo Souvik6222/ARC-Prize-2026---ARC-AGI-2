@@ -1,0 +1,53 @@
+[{"stream_name":"stderr","time":11.498874757,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":11.498940679,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":11.498944671,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":11.498946922,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":12.256675709,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":12.256710369,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":12.256713669,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":12.256715944,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":13.728331025,"data":"[BUDGET] rerun_mode=False | budget=0.10h | cutoff=Wed Sep  9 10:26:24 2026\n"}
+,{"stream_name":"stdout","time":13.728364236,"data":"Resolved target dataset path: /kaggle/input/competitions/arc-prize-2026-arc-agi-2/arc-agi_test_challenges.json\n"}
+,{"stream_name":"stdout","time":13.728367246,"data":"*** Pre-populated baseline submission.json: 240 tasks (sha256=3739be35dbba)\n"}
+,{"stream_name":"stdout","time":15.673760335,"data":"Found existing installation: tensorflow 2.20.0\r\n"}
+,{"stream_name":"stdout","time":20.015869708,"data":"Uninstalling tensorflow-2.20.0:\r\n"}
+,{"stream_name":"stdout","time":55.208847386,"data":"  Successfully uninstalled tensorflow-2.20.0\r\n"}
+,{"stream_name":"stdout","time":57.37836346,"data":"Found existing installation: torchao 0.10.0\r\n"}
+,{"stream_name":"stdout","time":57.479430055,"data":"Uninstalling torchao-0.10.0:\r\n"}
+,{"stream_name":"stdout","time":58.085836937,"data":"  Successfully uninstalled torchao-0.10.0\r\n"}
+,{"stream_name":"stdout","time":117.115378951,"data":"bundle roots at sys.path front: ['/kaggle/input/notebooks/soukeaizenz/pip-install-unsloth-flash-patch-fork']\n"}
+,{"stream_name":"stdout","time":137.587234165,"data":"3.12.13 torch 2.8.0+cu128 gpus 4 ['NVIDIA L4', 'NVIDIA L4', 'NVIDIA L4', 'NVIDIA L4']\n"}
+,{"stream_name":"stdout","time":137.587267713,"data":"torch location: /kaggle/input/notebooks/soukeaizenz/pip-install-unsloth-flash-patch-fork/torch/__init__.py\n"}
+,{"stream_name":"stdout","time":176.291089947,"data":"models: ['/kaggle/input/models/sorokin/qwen3_4b_grids15_sft139'] ['/kaggle/input/notebooks/soukeaizenz/pip-install-unsloth-flash-patch-fork/diffusers/models/lora.py', '/kaggle/input/notebooks/soukeaizenz/pip-install-unsloth-flash-patch-fork/diffusers/models/__pycache__/lora.cpython-312.pyc', '/kaggle/input/notebooks/soukeaizenz/pip-install-unsloth-flash-patch-fork/diffusers/loaders/lora_pipeline.py', '/kaggle/input/notebooks/soukeaizenz/pip-install-unsloth-flash-patch-fork/diffusers/loaders/lora_base.py', '/kaggle/input/notebooks/soukeaizenz/pip-install-unsloth-flash-patch-fork/diffusers/loaders/lora_conversion_utils.py', '/kaggle/input/notebooks/soukeaizenz/pip-install-unsloth-flash-patch-fork/diffusers/loaders/__pycache__/lora_conversion_utils.cpython-312.pyc', '/kaggle/input/notebooks/soukeaizenz/pip-install-unsloth-flash-patch-fork/diffusers/loaders/__pycache__/lora_base.cpython-312.pyc', '/kaggle/input/notebooks/soukeaizenz/pip-install-unsloth-flash-patch-fork/diffusers/loaders/__pycache__/lora_pipeline.cpython-312.pyc', '/kaggle/input/notebooks/soukeaizenz/pip-install-unsloth-flash-patch-fork/peft/tuners/lora', '/kaggle/input/notebooks/soukeaizenz/pip-install-unsloth-flash-patch-fork/peft/tuners/lora/loraga.py', '/kaggle/input/notebooks/soukeaizenz/pip-install-unsloth-flash-patch-fork/peft/tuners/lora/__pycache__/loraga.cpython-312.pyc', '/kaggle/input/notebooks/soukeaizenz/pip-install-unsloth-flash-patch-fork/peft/optimizers/lorafa.py', '/kaggle/input/notebooks/soukeaizenz/pip-install-unsloth-flash-patch-fork/peft/optimizers/loraplus.py', '/kaggle/input/notebooks/soukeaizenz/pip-install-unsloth-flash-patch-fork/peft/optimizers/__pycache__/lorafa.cpython-312.pyc', '/kaggle/input/notebooks/soukeaizenz/pip-install-unsloth-flash-patch-fork/peft/optimizers/__pycache__/loraplus.cpython-312.pyc']\n"}
+,{"stream_name":"stdout","time":176.291142425,"data":"utility scripts: []\n"}
+,{"stream_name":"stdout","time":189.764264821,"data":"unsloth candidates: ['/kaggle/input/notebooks/soukeaizenz/pip-install-unsloth-flash-patch-fork/unsloth/__init__.py']\n"}
+,{"stream_name":"stdout","time":189.785808433,"data":"Writing arc_loader.py\n"}
+,{"stream_name":"stdout","time":189.803111274,"data":"Writing arc_invariants.py\n"}
+,{"stream_name":"stdout","time":189.824783403,"data":"Writing arc_symbolic.py\n"}
+,{"stream_name":"stdout","time":189.843023972,"data":"Writing arc_decoder.py\n"}
+,{"stream_name":"stdout","time":189.878857239,"data":"Writing arc_solver.py\n"}
+,{"stream_name":"stdout","time":189.900298028,"data":"Writing starter.py\n"}
+,{"stream_name":"stdout","time":195.648606576,"data":"[starter] bundle roots at sys.path front: ['/kaggle/input/notebooks/soukeaizenz/pip-install-unsloth-flash-patch-fork']\n"}
+,{"stream_name":"stdout","time":210.747974571,"data":"[Symbolic Pre-Pass] checked 240 tasks in 0.90s: 7 solved with exact verified rules!\n"}
+,{"stream_name":"stdout","time":210.748016795,"data":"[Phase 0] Symbolic prepass resolved 7 / 240 tasks in 0.90s.\n"}
+,{"stream_name":"stdout","time":210.748020718,"data":"[Phase 0] Exact verified symbolic solutions secured on disk in /kaggle/working/symbolic_outputs.\n"}
+,{"stream_name":"stdout","time":211.480775175,"data":"*** Phase 0 Early Submission Hardened: 7 exact symbolic solutions secured (sha256=ba11572efa9a)\n"}
+,{"stream_name":"stdout","time":211.499686512,"data":"[COMMIT-MODE] Fast-path active: skipping Phase 1 TTT (0 tasks evaluated) to complete commit in ~1 min.\n"}
+,{"stream_name":"stdout","time":211.499717305,"data":"[COMMIT-MODE] Full 11.83h 4xL4 GPU search will execute automatically during Competition Scoring Run (RERUN=1).\n"}
+,{"stream_name":"stdout","time":211.529593406,"data":"[COMMIT-MODE] Fast-path active: skipping Phase 2.\n"}
+,{"stream_name":"stdout","time":211.666414137,"data":"*** Load solutions from '/kaggle/input/competitions/arc-prize-2026-arc-agi-2/arc-agi_evaluation_solutions.json'...\n"}
+,{"stream_name":"stdout","time":211.666453424,"data":"*** Loaded 7 shards / 7 samples from /kaggle/working/symbolic_outputs (skipped 0)\n"}
+,{"stream_name":"stdout","time":211.666460473,"data":"*** No decoded results at /kaggle/inference_outputs\n"}
+,{"stream_name":"stdout","time":211.666465214,"data":"*** No decoded results at /kaggle/inference_outputs_deep\n"}
+,{"stream_name":"stdout","time":211.666469194,"data":"shard files on disk: 0 | valid key-matched samples loaded: 7 (symbolic=7, inference=0, deep=0)\n"}
+,{"stream_name":"stdout","time":211.666473543,"data":"*** wrote submission.json: 240 tasks, 259 outputs, 7 model predictions, 252 fallbacks, sha256=ba11572efa9a\n"}
+,{"stream_name":"stdout","time":211.666477966,"data":"*** submission schema verified OK!\n"}
+,{"stream_name":"stderr","time":217.300222605,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":217.300253423,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":217.488391056,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":217.48842623,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":218.256430811,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":218.59363177,"data":"[NbConvertApp] Writing 161029 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":221.161403429,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":222.385407479,"data":"[NbConvertApp] Writing 880008 bytes to __results__.html\n"}
+]
