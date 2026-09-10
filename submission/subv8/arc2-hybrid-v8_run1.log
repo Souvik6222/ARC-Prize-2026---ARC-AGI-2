@@ -1,0 +1,52 @@
+[{"stream_name":"stderr","time":7.466986886,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":7.467032861,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":7.467036755,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":7.467038843,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":8.062866572,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.062885482,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.062888323,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.062890691,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":9.198824568,"data":"rerun=False budget=11.33h cutoff=Thu Sep 10 18:04:29 2026\n"}
+,{"stream_name":"stdout","time":10.533580794,"data":"Found existing installation: tensorflow 2.20.0\r\n"}
+,{"stream_name":"stdout","time":12.649731419,"data":"Uninstalling tensorflow-2.20.0:\r\n"}
+,{"stream_name":"stdout","time":31.796835768,"data":"  Successfully uninstalled tensorflow-2.20.0\r\n"}
+,{"stream_name":"stdout","time":32.652818334,"data":"Found existing installation: torchao 0.10.0\r\n"}
+,{"stream_name":"stdout","time":32.703046706,"data":"Uninstalling torchao-0.10.0:\r\n"}
+,{"stream_name":"stdout","time":33.006270954,"data":"  Successfully uninstalled torchao-0.10.0\r\n"}
+,{"stream_name":"stdout","time":38.526722716,"data":"3.12.13 torch 2.10.0+cu128 gpus 4 ['NVIDIA L4', 'NVIDIA L4', 'NVIDIA L4', 'NVIDIA L4']\n"}
+,{"stream_name":"stdout","time":38.526752345,"data":"models: ['/kaggle/input/models/sorokin/qwen3_4b_grids15_sft139'] []\n"}
+,{"stream_name":"stdout","time":38.526756041,"data":"utility scripts: []\n"}
+,{"stream_name":"stdout","time":80.639106247,"data":"unsloth candidates: ['/kaggle/input/notebooks/soukeaizenz/pip-install-unsloth-flash-patch-fork/unsloth/__init__.py']\n"}
+,{"stream_name":"stdout","time":80.656351107,"data":"Writing arc_invariants.py\n"}
+,{"stream_name":"stdout","time":80.677436428,"data":"Writing arc_symbolic.py\n"}
+,{"stream_name":"stdout","time":80.696919908,"data":"Writing arc_loader.py\n"}
+,{"stream_name":"stdout","time":80.715151055,"data":"Writing arc_decoder.py\n"}
+,{"stream_name":"stdout","time":80.748063778,"data":"Writing arc_solver.py\n"}
+,{"stream_name":"stdout","time":80.768530736,"data":"Writing starter.py\n"}
+,{"stream_name":"stdout","time":80.834573277,"data":"FAST_PATH=True (ARC_FULL_RUN=0)\n"}
+,{"stream_name":"stdout","time":89.189567939,"data":"[starter] bundle roots at sys.path front: ['/kaggle/input/notebooks/soukeaizenz/pip-install-unsloth-flash-patch-fork']\n"}
+,{"stream_name":"stdout","time":104.931324687,"data":"[Symbolic Pre-Pass] checked 120 tasks in 0.70s: 0 solved with exact verified rules!\n"}
+,{"stream_name":"stdout","time":104.931354779,"data":"[phase-1:fast] symbolic pre-pass: 0 exact verified; no GPU tasks run\n"}
+,{"stream_name":"stdout","time":104.931358688,"data":"phase-1 rc=0 took 0.4 min; remaining 678.4 min\n"}
+,{"stream_name":"stdout","time":104.931362222,"data":"phase-1 neural shards: 0\n"}
+,{"stream_name":"stdout","time":105.01890649,"data":"*** Loaded 0 shards / 0 samples from /kaggle/inference_outputs (skipped 0)\n"}
+,{"stream_name":"stdout","time":105.018927481,"data":"*** Loaded 0 shards / 0 samples from /kaggle/working/symbolic_outputs (skipped 0)\n"}
+,{"stream_name":"stdout","time":105.018940307,"data":"[phase-2] unprocessed=240 starved_tasks=0 remaining=678.4 min\n"}
+,{"stream_name":"stdout","time":105.018942786,"data":"[phase-2:catchup] skipped (FAST_PATH — no neural shards to catch up)\n"}
+,{"stream_name":"stdout","time":105.149656007,"data":"*** Load solutions from '/kaggle/input/competitions/arc-prize-2026-arc-agi-2/arc-agi_evaluation_solutions.json'...\n"}
+,{"stream_name":"stdout","time":105.14967552,"data":"*** Loaded 0 shards / 0 samples from /kaggle/working/symbolic_outputs (skipped 0)\n"}
+,{"stream_name":"stdout","time":105.149690196,"data":"*** Loaded 0 shards / 0 samples from /kaggle/inference_outputs (skipped 0)\n"}
+,{"stream_name":"stdout","time":105.149692487,"data":"*** Loaded 0 shards / 0 samples from /kaggle/inference_outputs_deep (skipped 0)\n"}
+,{"stream_name":"stdout","time":105.149694676,"data":"neural shard files: 0\n"}
+,{"stream_name":"stdout","time":105.14969663,"data":"NOTE: no neural shards (FAST_PATH baseline) — submission is symbolic+identity only, NOT the leaderboard recipe.\n"}
+,{"stream_name":"stdout","time":105.158515828,"data":"*** wrote submission.json: 240 tasks, 259 outputs, 259 fallbacks, sha256=3739be35dbba\n"}
+,{"stream_name":"stdout","time":105.158534546,"data":"*** submission schema verified OK!\n"}
+,{"stream_name":"stderr","time":110.852751344,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":110.852776899,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":111.00820297,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":111.008220508,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":111.651323395,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":111.981392645,"data":"[NbConvertApp] Writing 155845 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":114.422651053,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":115.585732796,"data":"[NbConvertApp] Writing 869182 bytes to __results__.html\n"}
+]
