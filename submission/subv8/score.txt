@@ -1,0 +1,39 @@
+Submission: Sub-8 (arc2-hybrid-v8)
+Kaggle Ref: 56139987
+Kernel Target: soukeaizenz/arc2-hybrid-v8 (Version 1)
+Date: 2026-09-10 07:35:41 UTC
+Public LB Score: 28.89
+Status: COMPLETE
+Evaluation Metric Breakdown: 208 / 720 test pairs correct (28.8889%)
+Comparison to Baselines:
+- Sub-7 Baseline (Broken Attempt-2 Fallback): 25.69% (185 / 720 pairs) -> Sub-8 gained +23 pairs (+3.20%)!
+- Sub-4 Baseline (Pure Identity Fallback): 28.06% (202 / 720 pairs) -> Sub-8 is +6 pairs higher
+- Theoretical Symbolic + Identity Floor: 29.03% (209 / 720 pairs: 7 symbolic + 202 identity)
+- Sub-3 / Sub-5 Benchmark: 30.14% (217 / 720 pairs: 7 symbolic + 202 identity + 8 neural solves)
+
+Architecture:
+- Tri-Layer Dual-Attempt Safety Shield:
+  1. arc_decoder.py (_fb_test_input): dynamically resolved split vs non-split dataset indexing, protecting multi-test tasks.
+  2. arc_decoder.py (select_orthogonal_top2): fallback_input assigned to attempt_2 whenever attempt_2 is empty.
+  3. Cell 11 Submission Assembly: authoritative fallback ensuring target_entry["attempt_2"] = test_inp_grid.
+- Fast Path for Interactive Commit:
+  Interactive commit completed in 115 seconds (0.03h quota), pre-populating baseline schema.
+- Competition Scoring Rerun (RERUN=1):
+  Ran full multi-GPU LoRA TTT across 4x NVIDIA L4 GPUs with r=128 RSLoRA.
+- Invariant Selection:
+  Wired score_v2 (shape invariant penalties & color hallucination filtering).
+
+Forensic Root-Cause Analysis (The +3.20% Recovery & The 28.89% Score):
+1. Shield Success:
+   The Dual-Attempt Safety Shield successfully prevented the catastrophic identity fallback overwrites of Sub-7, recovering 23 lost test pairs (185 -> 208 pairs, leaping from 25.69% to 28.89%).
+2. The 2-Candidate Identity Leak:
+   In arc_decoder.py and Cell 11, the identity fallback was only triggered if att2 == [[0]] or att2 == att1.
+   Whenever the model discovered two candidate grids (att1 and att2), attempt_2 was assigned att2 (the second model candidate).
+   If both model candidates were incorrect on an identity task, the identity fallback was not present in either attempt 1 or attempt 2, forfeiting the point.
+   Because identity has a 28.06% prior probability while an unverified secondary neural candidate has <3% accuracy, prioritizing candidate 2 over identity leaks points.
+
+Actionable Resolution for Sub-9:
+- Absolute Identity Prioritization:
+  Unless candidate 2 has high consensus (e.g. inf_score >= 3 or beam_score < 0.05), attempt_2 should strictly default to test_input.
+- Fast-Path Alignment:
+  Ensure Cell 9 in fast-path evaluates test_challenges when available so that the interactive commit also secures the 7 symbolic rules directly on disk.
